@@ -1,0 +1,6 @@
+http://localhost/prueba_instituto_57/public/home/index
+
+
+base de datos
+base_instituto
+
