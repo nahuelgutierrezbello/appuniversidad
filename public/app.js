@@ -324,7 +324,7 @@ $(document).ready(function () {
         contentContainer.fadeOut(200, function() {
             // Realiza la petición AJAX
             $.ajax({
-                url: `${BASE_URL}${url}`, // CORRECCIÓN: Se añade la variable BASE_URL a la URL de la petición.
+                url: url, // CORRECCIÓN: La variable 'url' ya contiene la ruta relativa necesaria.
                 type: 'GET',
                 success: function(response) {
                     let finalHtml = response;

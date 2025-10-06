@@ -100,11 +100,13 @@ class ComposerStaticInit657ac079313fab046eb8c29fe1d6992b
     );
 
     public static $classMap = array (
+        'App\\Controllers\\Ajax' => __DIR__ . '/../..' . '/app/Controllers/Ajax.php',
+        'App\\Controllers\\AjaxController' => __DIR__ . '/../..' . '/app/Controllers/AjaxController.php',
         'App\\Controllers\\BaseController' => __DIR__ . '/../..' . '/app/Controllers/BaseController.php',
+        'App\\Controllers\\Carreras' => __DIR__ . '/../..' . '/app/Controllers/Carreras.php',
         'App\\Controllers\\Categorias' => __DIR__ . '/../..' . '/app/Controllers/Categorias.php',
         'App\\Controllers\\Estudiantes' => __DIR__ . '/../..' . '/app/Controllers/Estudiantes.php',
         'App\\Controllers\\Home' => __DIR__ . '/../..' . '/app/Controllers/Home.php',
-        'App\\Controllers\\RegistrarCarrera' => __DIR__ . '/../..' . '/app/Controllers/RegistrarCarrera.php',
         'App\\Database\\Seeds\\CarreraSeeder' => __DIR__ . '/../..' . '/app/Database/Seeds/CarreraSeeder.php',
         'App\\Database\\Seeds\\CategoriaSeeder' => __DIR__ . '/../..' . '/app/Database/Seeds/CategoriaSeeder.php',
         'App\\Database\\Seeds\\DatabaseSeeder' => __DIR__ . '/../..' . '/app/Database/Seeds/DatabaseSeeder.php',
