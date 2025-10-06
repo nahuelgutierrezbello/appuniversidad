@@ -4,7 +4,7 @@
   <p>Una aplicación web desarrollada con <strong>CodeIgniter 4</strong> para la administración integral de estudiantes, carreras y categorías académicas.</p>
 </div>
 
----
+---///
 
 ## 🚀 Características Principales
 
