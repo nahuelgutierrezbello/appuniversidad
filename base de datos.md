@@ -1,5 +1,5 @@
 ##### 📊 TABLA Carrera - Datos exigidos:
-
+//
 ncar - Nombre de la carrera (OBLIGATORIO)
 
 codcar - Código de la carrera (OBLIGATORIO, ÚNICO)
