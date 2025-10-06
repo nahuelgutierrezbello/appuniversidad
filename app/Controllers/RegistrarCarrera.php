@@ -1,7 +1,8 @@
 <?php
 
-// Define el espacio de nombres para organizar la clase.
-namespace App\Controllers;
+// Define el espacio de nombres para la sección de Administración.
+namespace App\Controllers\Admin;
+use App\Controllers\BaseController;
 // Importa los modelos necesarios.
 use App\Models\CarreraModel;
 use App\Models\CategoriaModel;
@@ -36,7 +37,7 @@ class RegistrarCarrera extends BaseController
         $data['modalidades'] = $modalidadModel->findAll();
 
         // Carga la vista y le pasa los datos.
-        return view('registrarCarrera', $data);
+        return view('admin/registrarCarrera', $data);
     }
 
     /**
@@ -66,11 +67,11 @@ class RegistrarCarrera extends BaseController
         // Intenta guardar los datos. El modelo se encarga de la validación.
         if ($model->save($data) === false) {
             // Si falla, redirige hacia atrás con los datos y los errores.
-            return redirect()->back()->withInput()->with('errors', $model->errors());
+            return redirect()->to('/admin/carreras')->withInput()->with('errors', 'Error al registrar: ' . implode(', ', $model->errors()));
         }
 
         // Si es exitoso, redirige a la lista de carreras con un mensaje de éxito.
-        return redirect()->to(base_url('registrarCarrera'))->with('success', 'Carrera registrada correctamente.');
+        return redirect()->to('/admin/carreras')->with('success', 'Carrera registrada correctamente.');
     }
 
     /**
@@ -122,11 +123,11 @@ class RegistrarCarrera extends BaseController
 
         // Intenta actualizar los datos. El modelo se encarga de la validación.
         if ($model->update($id, $data) === false) {
-            return redirect()->back()->withInput()->with('errors', $model->errors());
+            return redirect()->to('/admin/carreras')->withInput()->with('errors', 'Error al actualizar: ' . implode(', ', $model->errors()));
         }
 
         // Si es exitoso, redirige con un mensaje de éxito.
-        return redirect()->to(base_url('registrarCarrera'))->with('success', 'Carrera actualizada correctamente.');
+        return redirect()->to('/admin/carreras')->with('success', 'Carrera actualizada correctamente.');
     }
 
     /**
@@ -142,10 +143,10 @@ class RegistrarCarrera extends BaseController
         $model = new CarreraModel();
         // Intenta eliminar el registro.
         if ($model->delete($id)) {
-            return redirect()->to(base_url('registrarCarrera'))->with('success', 'Carrera eliminada correctamente.');
+            return redirect()->to('/admin/carreras')->with('success', 'Carrera eliminada correctamente.');
         } else {
             // Si falla, redirige con un mensaje de error.
-            return redirect()->to(base_url('registrarCarrera'))->with('error', 'No se pudo eliminar la carrera.');
+            return redirect()->to('/admin/carreras')->with('error', 'No se pudo eliminar la carrera.');
         }
     }
 

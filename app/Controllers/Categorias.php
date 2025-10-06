@@ -1,7 +1,7 @@
 <?php
 
-// Define el espacio de nombres para organizar la clase.
-namespace App\Controllers;
+namespace App\Controllers; // <-- CORRECCIÓN: Namespace incorrecto para la estructura actual.
+use App\Controllers\BaseController; // <-- CAMBIO: Importar BaseController
 // Importa el modelo necesario.
 use App\Models\CategoriaModel;
 /**
@@ -24,7 +24,7 @@ class Categorias extends BaseController
         $model = new CategoriaModel();
         $data['categorias'] = $model->findAll();
         // Carga la vista y le pasa los datos.
-        return view('categorias', $data);
+        return view('admin/categorias', $data);
     }
 
     /**
@@ -46,11 +46,11 @@ class Categorias extends BaseController
 
         // Intenta guardar los datos. El modelo se encarga de la validación.
         if ($model->save($data) === false) {
-            return redirect()->back()->withInput()->with('errors', $model->errors());
+            return redirect()->to('/admin/categorias')->withInput()->with('errors', 'Error al registrar: ' . implode(', ', $model->errors()));
         }
 
         // Si es exitoso, redirige con un mensaje de éxito.
-        return redirect()->to(base_url('categorias'))->with('success', 'Categoría registrada correctamente.');
+        return redirect()->to('/admin/categorias')->with('success', 'Categoría registrada correctamente.');
     }
 
     /**
@@ -99,11 +99,11 @@ class Categorias extends BaseController
 
         // Intenta actualizar los datos.
         if ($model->update($id, $data) === false) {
-            return redirect()->back()->withInput()->with('errors', $model->errors());
+            return redirect()->to('/admin/categorias')->withInput()->with('errors', 'Error al actualizar: ' . implode(', ', $model->errors()));
         }
 
         // Si es exitoso, redirige con un mensaje de éxito.
-        return redirect()->to(base_url('categorias'))->with('success', 'Categoría actualizada correctamente.');
+        return redirect()->to('/admin/categorias')->with('success', 'Categoría actualizada correctamente.');
     }
 
     /**
@@ -119,10 +119,10 @@ class Categorias extends BaseController
         $model = new CategoriaModel();
         // Intenta eliminar el registro.
         if ($model->delete($id)) {
-            return redirect()->to(base_url('categorias'))->with('success', 'Categoría eliminada correctamente.');
+            return redirect()->to('/admin/categorias')->with('success', 'Categoría eliminada correctamente.');
         } else {
             // Si falla, redirige con un mensaje de error.
-            return redirect()->to(base_url('categorias'))->with('error', 'No se pudo eliminar la categoría.');
+            return redirect()->to('/admin/categorias')->with('error', 'No se pudo eliminar la categoría.');
         }
     }
 

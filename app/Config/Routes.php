@@ -4,6 +4,8 @@ namespace Config;
 
 $routes = Services::routes();
 
+$routes->get('ajax/test', 'Ajax::test');
+
 $routes->setDefaultNamespace('App\Controllers');
 $routes->setDefaultController('Home');
 $routes->setDefaultMethod('index');
@@ -57,3 +59,14 @@ $routes->get('registrarCarrera/search/(:num)', 'RegistrarCarrera::search/$1'); /
 // Ruta especial para la generación de código de carrera en tiempo real (AJAX).
 // (:segment) es un placeholder para cualquier caracter en la URL (el nombre de la carrera).
 $routes->get('registrarCarrera/generar-codigo/(:segment)', 'RegistrarCarrera::generarCodigoAjax/$1');
+
+// --- RUTAS PARA CARGA DE CONTENIDO DINÁMICO (AJAX) ---
+// Estas rutas son usadas por JavaScript para cargar el contenido de las carreras dinámicamente.
+$routes->get('ajax/oferta_academica_default', 'AjaxController::oferta_academica_default');
+$routes->get('ajax/ciencia_datos', 'AjaxController::ciencia_datos');
+$routes->get('ajax/programacion_web', 'AjaxController::programacion_web');
+$routes->get('ajax/profesorado_matematica', 'AjaxController::profesorado_matematica');
+$routes->get('ajax/profesorado_ingles', 'AjaxController::profesorado_ingles');
+$routes->get('ajax/educacion_inicial', 'AjaxController::educacion_inicial');
+$routes->get('ajax/enfermeria', 'AjaxController::enfermeria');
+$routes->get('ajax/seguridad_higiene', 'AjaxController::seguridad_higiene');

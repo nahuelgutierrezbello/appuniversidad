@@ -1,0 +1,2 @@
+- [x] Remover las inclusiones manuales de header.php, Navbar.php y footer.php de app/Views/index.php para evitar duplicaciones, ya que el layout.php las maneja automáticamente.
+- [x] Verificar que la página index se renderice correctamente sin duplicaciones después de los cambios. Eliminé header.php ya que no se usaba.

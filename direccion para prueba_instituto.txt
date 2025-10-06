@@ -1,4 +1,4 @@
-http://localhost/prueba_instituto_57/public/home/index
+http://localhost/appuniversidad_prueba_laburo/public/home/index
 
 
 base de datos

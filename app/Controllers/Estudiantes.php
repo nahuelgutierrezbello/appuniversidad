@@ -1,7 +1,8 @@
 <?php
 
-// Define el espacio de nombres para organizar la clase.
-namespace App\Controllers;
+// Define el espacio de nombres para la sección de Administración.
+namespace App\Controllers\Admin;
+use App\Controllers\BaseController;
 // Importa los modelos que este controlador necesita para funcionar.
 use App\Models\EstudianteModel;
 use App\Models\CarreraModel;
@@ -33,7 +34,7 @@ class Estudiantes extends BaseController
         $data['carreras'] = $carreraModel->findAll();
 
         // Carga la vista 'estudiantes.php' y le pasa el array '$data'.
-        return view('estudiantes', $data);
+        return view('admin/estudiantes', $data);
     }
 
     /**
@@ -66,11 +67,11 @@ class Estudiantes extends BaseController
         // Intenta guardar los datos. El modelo se encarga de la validación.
         if ($estudianteModel->save($data) === false) {
             // Si la validación falla, redirige hacia atrás con los errores.
-            return redirect()->back()->withInput()->with('errors', $estudianteModel->errors());
+            return redirect()->to('/admin/estudiantes')->withInput()->with('errors', 'Error al registrar: ' . implode(', ', $estudianteModel->errors()));
         }
 
         // Si el guardado es exitoso, redirige a la lista de estudiantes con un mensaje de éxito.
-        return redirect()->to(base_url('estudiantes'))->with('success', 'Estudiante registrado correctamente.');
+        return redirect()->to('/admin/estudiantes')->with('success', 'Estudiante registrado correctamente.');
     }
 
     /**
@@ -122,11 +123,11 @@ class Estudiantes extends BaseController
 
         // Intenta actualizar los datos. El modelo se encarga de la validación.
         if ($estudianteModel->update($id, $data) === false) {
-            return redirect()->back()->withInput()->with('errors', $estudianteModel->errors());
+            return redirect()->to('/admin/estudiantes')->withInput()->with('errors', 'Error al actualizar: ' . implode(', ', $estudianteModel->errors()));
         }
 
         // Si la actualización es exitosa, redirige con un mensaje de éxito.
-        return redirect()->to(base_url('estudiantes'))->with('success', 'Estudiante actualizado correctamente.');
+        return redirect()->to('/admin/estudiantes')->with('success', 'Estudiante actualizado correctamente.');
     }
 
     /**
@@ -143,10 +144,10 @@ class Estudiantes extends BaseController
         $estudianteModel = new EstudianteModel();
         // Intenta eliminar el registro.
         if ($estudianteModel->delete($id)) {
-            return redirect()->to(base_url('estudiantes'))->with('success', 'Estudiante eliminado correctamente.');
+            return redirect()->to('/admin/estudiantes')->with('success', 'Estudiante eliminado correctamente.');
         } else {
             // Si por alguna razón falla (ej: un callback del modelo lo impide), redirige con un error.
-            return redirect()->to(base_url('estudiantes'))->with('error', 'No se pudo eliminar al estudiante.');
+            return redirect()->to('/admin/estudiantes')->with('error', 'No se pudo eliminar al estudiante.');
         }
     }
 
@@ -200,6 +201,6 @@ class Estudiantes extends BaseController
             return $this->response->setJSON($estudiantes);
         }
         // Si alguien intenta acceder a esta URL directamente desde el navegador, lo redirige.
-        return redirect()->to('/estudiantes');
+        return redirect()->to('/admin/estudiantes');
     }
 }

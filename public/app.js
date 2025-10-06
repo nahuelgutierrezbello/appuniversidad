@@ -2,14 +2,14 @@
 // se ejecute solo después de que toda la página HTML (el DOM) se haya cargado por completo.
 // Esto previene errores al intentar manipular elementos que aún no existen.
 $(document).ready(function () {
-    // Inicializa las tablas con los IDs especificados usando la librería DataTables.
-    // Esto las convierte en tablas interactivas con paginación, búsqueda y ordenamiento.
-    $('#studentsTable, #careersTable, #categoriesTable').DataTable({
-        // Configura el idioma de la tabla a español, cargando la traducción desde un CDN.
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json"
-        }
-    });
+    // Deshabilitar restauración de scroll para que al refrescar vaya al inicio
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+
+    console.log('Script cargado'); // Agregado para depuración
+    console.log('Elemento #ciencia-datos-link encontrado:', $('#ciencia-datos-link').length);
 
     // Lee la URL base de la aplicación desde un objeto global (window.APP_CONFIG)
     // que se define en las vistas PHP. Esto hace que las URLs de AJAX sean portátiles.
@@ -22,7 +22,7 @@ $(document).ready(function () {
     $('#studentsTable').on('click', '.edit-btn', function () {
         // Obtiene el ID del estudiante desde el atributo 'data-id' del botón.
         const studentId = $(this).data('id');
-        
+
         // Petición AJAX para obtener los datos del estudiante desde el servidor.
         $.ajax({
             url: `${BASE_URL}estudiantes/edit/${studentId}`,
@@ -76,7 +76,7 @@ $(document).ready(function () {
                 $('#studentDetails').removeClass('d-none');
             },
             error: function(xhr) {
-                // Muestra un mensaje de error si el estudiante no se encuentra.
+                // Muestra un mensaje de error si el estudiante no encuentra.
                 const errorMsg = xhr.responseJSON ? xhr.responseJSON.error : 'Error al buscar.';
                 Swal.fire('Error', errorMsg, 'error');
             }
@@ -182,7 +182,7 @@ $(document).ready(function () {
     // 3. Evento para el formulario de búsqueda por ID (AJAX para mostrar detalles).
     $('#careersTable').on('click', '.edit-car-btn', function() {
         const careerId = $(this).data('id');
-        
+
         $.ajax({
             url: `${BASE_URL}registrarCarrera/edit/${careerId}`,
             type: 'GET',
@@ -204,7 +204,7 @@ $(document).ready(function () {
     // --- Lógica para Categorías ---
     $('#categoriesTable').on('click', '.edit-cat-btn', function() {
         const categoryId = $(this).data('id');
-        
+
         $.ajax({
             url: `${BASE_URL}categorias/edit/${categoryId}`,
             type: 'GET',
@@ -268,6 +268,91 @@ $(document).ready(function () {
         });
     }
 
+    // --- Lógica para carga dinámica de carreras en la página de inicio ---
+
+    // Manejador de eventos genérico para todos los enlaces de carreras
+    $('body').on('click', 'a[id$="-link"], a[id^="ver-detalle-"]', function(e) {
+        e.preventDefault();
+        const id = $(this).attr('id');
+        let url = '';
+
+        // Determina la URL de AJAX basada en el ID del enlace clickeado
+        if (id.includes('ciencia-datos')) url = 'ajax/ciencia_datos';
+        else if (id.includes('profesorado-matematica')) url = 'ajax/profesorado_matematica';
+        else if (id.includes('programacion-web')) url = 'ajax/programacion_web';
+        else if (id.includes('profesorado-ingles')) url = 'ajax/profesorado_ingles';
+        else if (id.includes('educacion-inicial')) url = 'ajax/educacion_inicial';
+        else if (id.includes('enfermeria')) url = 'ajax/enfermeria';
+        else if (id.includes('seguridad-higiene')) url = 'ajax/seguridad_higiene';
+
+        if (!url) return; // Si no se encontró una URL, no hace nada
+
+        // Cierra el menú desplegable
+        var dropdownElement = document.getElementById('navbarDropdownOfertaAcademica');
+        var dropdownInstance = bootstrap.Dropdown.getInstance(dropdownElement) || new bootstrap.Dropdown(dropdownElement);
+        dropdownInstance.hide();
+
+        // Scroll suave a la sección y carga del contenido
+        $('html, body').animate({
+            scrollTop: $('#careers').offset().top - 80 // 80px de offset por el navbar
+        }, 800);
+        cargarContenidoCarrera(url);
+    });
+
+    // Evento para el botón "Volver" que hace scroll suave hacia la parte superior de la página.
+    $('body').on('click', '#volver-oferta-default', function(e) {
+        e.preventDefault();
+        $('html, body').animate({
+            scrollTop: 0 // Llevamos la vista al inicio de la página
+        }, 800);
+    });
+
+    /**
+     * Función reutilizable para cargar contenido de carreras vía AJAX.
+     * @param {string} url - La URL del controlador AJAX a la que se llamará.
+     * @param {string} containerSelector - Selector del contenedor donde cargar el contenido (opcional).
+     */
+
+    // Función reutilizable para cargar contenido vía AJAX
+    function cargarContenidoCarrera(url, containerSelector = '#careers') {
+        const contentContainer = $(containerSelector);
+
+        // Añadimos una clase para dar feedback visual inmediato (cambia el fondo)
+        contentContainer.addClass('loading-content');
+
+        // Muestra un efecto de "fade out" en el contenedor actual
+        contentContainer.fadeOut(200, function() {
+            // Realiza la petición AJAX
+            $.ajax({
+                url: `${BASE_URL}${url}`, // CORRECCIÓN: Se añade la variable BASE_URL a la URL de la petición.
+                type: 'GET',
+                success: function(response) {
+                    let finalHtml = response;
+
+                    // Si la URL no es la de la vista por defecto, añadimos el botón "Volver".
+                    if (url !== 'ajax/oferta_academica_default') {
+                        const volverBtnHtml = `
+                            <div class="container mt-4 text-center" data-aos="fade-up">
+                                <button id="volver-oferta-default" class="btn btn-secondary btn-lg px-4 py-2">
+                                    <i class="fas fa-arrow-up me-2"></i>Volver Arriba
+                                </button>
+                            </div>
+                        `;
+                        finalHtml += volverBtnHtml;
+                    }
+
+                    contentContainer.html(finalHtml).removeClass('loading-content').fadeIn(300);
+
+                    // Re-inicializa las animaciones de AOS para el nuevo contenido
+                    AOS.init({ once: true }); // Usamos 'once: true' para que la animación ocurra solo una vez por carga.
+                },
+                error: function() {
+                    contentContainer.html('<p class="text-center text-danger">Error al cargar el contenido.</p>').removeClass('loading-content').fadeIn(300);
+                }
+            });
+        });
+    }
+
     // Comprueba si existen mensajes "flash" de éxito o error pasados desde el controlador PHP.
     // Estos mensajes se usan para notificar al usuario el resultado de una acción (ej: "Estudiante registrado").
     // Si encuentra un mensaje, lo muestra con SweetAlert.
@@ -288,4 +373,19 @@ $(document).ready(function () {
             text: window.APP_CONFIG.flash.error
         });
     }
+
+    // Lógica para el botón de toggle test
+    let ajaxTestLoaded = false;
+    $('#toggle-test-btn').on('click', function() {
+        $('#ajax-test-section').slideToggle();
+        if (!ajaxTestLoaded) {
+            $.get(`${BASE_URL}ajax/test`, function(data) {
+                $('#ajax-test-content').html(data);
+                ajaxTestLoaded = true;
+            });
+        }
+    });
+
+
+
 });

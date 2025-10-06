@@ -1,0 +1,350 @@
+
+
+:root {
+  --primary-color: #0d6efd;
+  --primary-dark: #0b5ed7;
+  --dark-color: #212529;
+  --light-color: #f8f9fa;
+  --shadow-sm: 0 2px 5px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
+  /* --transition: all 0.3s ease; */
+}
+
+/* Estilos base */
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background-color: var(--light-color);
+  color: var(--dark-color);
+  line-height: 1.6;
+}
+
+
+.estudiantes-page{
+  background-image: url('./img/estudiantes-page.png');
+
+}
+.profesores-page{
+  background-image: url('./img/profesores-page.png');
+}
+
+.categorias-page{
+  /* background-image: url('./img/categorias-page.png'); */
+  background-image: url('./img/333.png');
+}
+
+
+.navbar.sticky-top {
+    z-index: 1050; /* o un valor alto si tienes otros elementos flotantes */
+}
+/* Hero Section unificada */
+.hero-section {
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+  color: white;
+  text-align: center;
+}
+
+/* Componentes reutilizables */
+.card {
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-sm);
+  /* transition: var(--transition); */
+}
+
+/* .card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+} */
+
+.card-header {
+  font-weight: 600;
+  padding: 1rem 1.5rem;
+}
+
+/* Botones mejorados */
+.btn {
+  /* transition: var(--transition); */
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+/* Navbar profesional */
+.navbar {
+  padding: 0.8rem 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.navbar-brand {
+  font-size: 1.2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-section {
+    height: 300px;
+    padding: 0 1rem;
+  }
+  
+  .navbar-nav .nav-link {
+    padding: 0.5rem 0;
+  }
+  
+  .card-body {
+    padding: 1.25rem;
+  }
+}
+
+/* Animaciones */
+/* @keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+} */
+
+/* WhatsApp Float */
+.whatsapp-float {
+  position: fixed;
+  width: 70px;
+  height: 70px;
+  bottom: 40px;
+  left: 40px;
+  background-color: #25d366;
+  color: #FFF;
+  border-radius: 50px;
+  text-align: center;
+  font-size: 30px;
+  box-shadow: 2px 2px 3px #999;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.whatsapp-float:hover {
+  background-color: #15da32;
+  transform: scale(1.5);
+}
+
+.whatsapp-icon {
+  margin-top: 5px;
+  text-decoration: none !important;
+}
+
+/* styles.css */
+/* styles.css */
+
+/* Ajustes para la tabla de carreras */
+#careersTableBody td:nth-child(1) { /* Columna ID */
+  width: 10%;
+}
+
+#careersTableBody td:nth-child(2) { /* Columna Nombre */
+  width: 70%;
+  text-align: center; /* ¡Nuevo! Centra el contenido de la columna Nombre */
+}
+
+#careersTableBody td:nth-child(3) { /* Columna Acciones */
+  width: 20%;
+  text-align: center;
+}
+
+/* También aplica a los encabezados para consistencia */
+.table-dark th:nth-child(1) {
+  width: 10%;
+}
+
+.table-dark th:nth-child(2) {
+  width: 70%;
+  text-align: center; /* ¡Nuevo! Centra el encabezado Nombre */
+}
+
+.table-dark th:nth-child(3) {
+  width: 20%;
+  text-align: center;
+}
+
+/* Pequeño ajuste para los botones dentro de la tabla */
+#careersTableBody .btn {
+  margin: 0 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .whatsapp-float {
+    width: 50px;
+    height: 50px;
+    bottom: 30px;
+    left: 20px;
+    font-size: 25px;
+    text-decoration: none !important;
+  }
+}
+/* WhatsApp Float - Lado derecho */
+.whatsapp-float.whatsapp-right {
+  left: auto;
+  right: 40px;
+  text-decoration: none !important;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+  .whatsapp-float.whatsapp-right {
+    left: auto;
+    right: 20px;
+  }
+}
+.btn-warning { /* Esta regla sobrescribirá el estilo predeterminado de Bootstrap para .btn-warning */
+  background-color: #0dcaf0 !important; /* Color azul claro (info de Bootstrap) */
+  border-color: #0dcaf0 !important;
+  color: #FFFFFF !important; /* Texto blanco */
+}
+
+
+/* Ajustes para la tabla de estudiantes - similar a categorías */
+#studentsTableBody td:nth-child(1) { /* Columna ID */
+  width: 10%;
+}
+
+#studentsTableBody td:nth-child(2) { /* Columna Nombre */
+  width: 50%;
+  text-align: center;
+}
+
+#studentsTableBody td:nth-child(3) { /* Columna Carrera */
+  width: 20%;
+  text-align: center;
+}
+
+#studentsTableBody td:nth-child(4) { /* Columna Acciones */
+  width: 20%;
+  text-align: center;
+}
+
+/* También aplica a los encabezados para consistencia */
+.table-dark th:nth-child(1) {
+  width: 10%;
+}
+
+.table-dark th:nth-child(2) {
+  width: 50%;
+  text-align: center;
+}
+
+.table-dark th:nth-child(3) {
+  width: 20%;
+  text-align: center;
+}
+
+.table-dark th:nth-child(4) {
+  width: 20%;
+  text-align: center;
+}
+
+/* Estilo para el botón de eliminar en estudiantes */
+#studentsTableBody .btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  border-radius: 0.2rem;
+}
+
+/* Asegurar que las tablas sean consistentes */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Estilo para DataTables */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  padding: 0.25rem 0.5rem;
+  margin-left: 0.25rem;
+  border-radius: 0.2rem;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background: var(--primary-color);
+  color: white !important;
+  border: 1px solid var(--primary-color);
+}
+
+/* Asegura que el texto en las celdas no se divida y se mantenga en una sola línea */
+#studentsTableBody td {
+    white-space: nowrap;       /* Evita el salto de línea */
+    overflow: hidden;          /* Oculta el texto que excede */
+    text-overflow: ellipsis;   /* Muestra puntos suspensivos si el texto es muy largo */
+    max-width: 200px;          /* Establece un ancho máximo para la celda */
+}
+
+/* Ajusta el padding de las celdas para optimizar el espacio */
+#studentsTableBody td, #studentsTableBody th {
+    padding: 8px 12px !important;
+}
+
+/* Asegura que la tabla sea responsiva y se adapte al contenedor */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+
+/* Centrar contenido de la tabla de categorías */
+#categoriesTable th, 
+#categoriesTable td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Asegurar que el botón esté centrado */
+#categoriesTable .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+/* Añade esto al final de tu styles.css */
+
+/* Ajuste específico para los botones en la tabla de carreras */
+#careersTableBody td:nth-child(3) {
+  white-space: nowrap; /* Evita que los botones se rompan en líneas separadas */
+}
+
+#careersTableBody .btn {
+  display: inline-flex; /* Muestra los botones en línea */
+  margin: 0 2px; /* Espaciado entre botones */
+  vertical-align: middle; /* Alineación vertical */
+  min-width: auto; /* Permite que los botones se ajusten al contenido */
+  padding: 0.25rem 0.5rem; /* Padding más compacto */
+}
+
+/* Asegura que el contenedor de botones no cause desbordamiento */
+#careersTableBody td:last-child {
+  padding: 8px 4px !important; /* Reduce el padding para dar más espacio */
+}
+
+
+
+

@@ -1,0 +1,175 @@
+
+CREATE TABLE Carrera (
+  id_car BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  ncar VARCHAR(120) NOT NULL,
+  codcar VARCHAR(20) NOT NULL UNIQUE
+) ENGINE=InnoDB;
+
+CREATE TABLE Estudiante (
+  id_est BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  dni CHAR(8) NOT NULL UNIQUE,
+  nest VARCHAR(80) NOT NULL,
+  fecha_nac DATE,
+  edad CHAR(2) NOT NULL,
+  email VARCHAR(50) NOT NULL,
+  id_car BIGINT UNSIGNED,
+  CONSTRAINT fk_estudiante_carrera FOREIGN KEY (id_car) REFERENCES Carrera(id_car),
+  CONSTRAINT chk_dni_valido CHECK (dni REGEXP '^[0-9]{8}$')
+) ENGINE=InnoDB;
+
+CREATE TABLE Profesor (
+  id_prof BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  legajo INT NOT NULL UNIQUE,
+  nprof VARCHAR(80) NOT NULL,
+  id_car BIGINT UNSIGNED,
+  CONSTRAINT fk_profesor_carrera FOREIGN KEY (id_car) REFERENCES Carrera(id_car)
+) ENGINE=InnoDB;
+
+CREATE TABLE Categoria (
+  id_cat BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  codcat VARCHAR(20) NOT NULL UNIQUE,
+  ncat VARCHAR(120) NOT NULL,
+  id_car BIGINT UNSIGNED,
+  CONSTRAINT fk_categoria_carrera FOREIGN KEY (id_car) REFERENCES Carrera(id_car)
+) ENGINE=InnoDB;
+
+CREATE TABLE Modalidad (
+  id_mod BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  codmod VARCHAR(20) NOT NULL UNIQUE,
+  nmod VARCHAR(120) NOT NULL,
+  id_car BIGINT UNSIGNED,
+  CONSTRAINT fk_modalidad_carrera FOREIGN KEY (id_car) REFERENCES Carrera(id_car)
+) ENGINE=InnoDB;
+
+CREATE TABLE rol (
+  id_rol BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  nrol VARCHAR(12) NOT NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE usuarios (
+  id_user BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  rol VARCHAR(1) NOT NULL UNIQUE
+) ENGINE=InnoDB;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Perfecto 👌 — estás armando una base de datos institucional con una estructura inicial sólida (carreras, estudiantes, profesores, categorías, modalidades, roles y usuarios).
+
+Para poder escalarla y construir un dashboard potente, te conviene pensar en qué información se va a visualizar, medir o gestionar: matrículas, notas, asistencia, cursos, horarios, estadísticas, rendimiento, etc.
+
+Aquí te dejo sugerencias de tablas adicionales, organizadas por área funcional, para que puedas decidir qué módulos incluir:
+
+🧩 1. Área Académica
+
+Objetivo: gestionar la estructura educativa (materias, cursos, horarios, calificaciones, etc.)
+
+Materia / Asignatura: nombre, código, carga horaria, id_car (carrera), año, cuatrimestre.
+
+Curso / Comisión: año lectivo, división o turno, modalidad, profesor a cargo.
+
+Plan_de_estudio: versión del plan, materias asociadas, créditos, duración.
+
+InscripcionMateria: relación estudiante–materia–año–estado (inscripto, regular, aprobado, etc.)
+
+Nota / Calificacion: estudiante, materia, fecha, tipo de evaluación, nota numérica, observaciones.
+
+Asistencia: estudiante, materia o curso, fecha, presente/ausente/tarde, observaciones.
+
+Examen: tipo (parcial, final), fecha, aula, profesor responsable.
+
+Tareas / Actividades: título, descripción, fecha_entrega, id_materia, id_profesor.
+
+EntregaTarea: estudiante, id_tarea, fecha_entrega, calificación.
+
+🧑‍🏫 2. Área de Personal Docente
+
+Objetivo: gestionar los datos laborales y administrativos de los profesores.
+
+CargoDocente: tipo de cargo (titular, adjunto, ayudante, suplente).
+
+Contrato: fecha_inicio, fecha_fin, categoría, dedicación horaria, salario.
+
+AsistenciaDocente: registro de presentismo del personal.
+
+Capacitaciones: cursos o talleres realizados, horas, institución.
+
+🧑‍🎓 3. Área Estudiantil
+
+Objetivo: administrar los datos académicos y administrativos del alumnado.
+
+InscripcionCarrera: estudiante, carrera, fecha_ingreso, estado (activo, egresado, suspendido).
+
+DocumentacionEstudiante: tipo_doc (DNI, analítico, constancia), fecha_entrega, validado_por.
+
+Pagos / Cuotas: estudiante, fecha, monto, concepto, estado_pago.
+
+Becas: tipo_beca, estudiante, monto, vigencia, estado.
+
+ReinscripcionAnual: control por ciclo lectivo.
+
+🏫 4. Área Institucional / Administración
+
+Objetivo: organizar el funcionamiento general del instituto.
+
+Sede / Campus: nombre, dirección, contacto.
+
+Aula: código, capacidad, tipo (teórica, laboratorio, taller), sede.
+
+Horario: día, hora_inicio, hora_fin, aula, materia, profesor.
+
+CalendarioAcadémico: eventos, feriados, fechas importantes.
+
+Notificaciones / Comunicados: mensaje, tipo (administrativo, académico), fecha_envío, destinatario (rol o usuario).
+
+Inventario: equipamiento, recursos tecnológicos o didácticos, mantenimiento.
+
+Mantenimiento: tipo, fecha, encargado, costo.
+
+💻 5. Área de Usuarios y Seguridad
+
+Objetivo: manejar autenticación, roles, permisos y actividad.
+
+Usuarios: (ya lo tienes, pero puedes expandirlo) — agregar username, password_hash, email, estado, fecha_creación.
+
+Roles: administrador, profesor, estudiante, secretaria, etc.
+
+Permisos: acceso a módulos o acciones específicas.
+
+Bitacora / LogActividad: usuario, acción realizada, fecha, IP, resultado.
+
+SesionesActivas: control de login, dispositivo, tiempo.
+
+📊 6. Área de Analítica / Dashboard
+
+Objetivo: obtener métricas y reportes automáticos.
+Podrías basar tus dashboards en vistas o tablas resumen como:
+
+MetricasAcademicas: totales de estudiantes activos, egresados, promedio de notas, porcentaje de aprobación, etc.
+
+MetricasFinancieras: ingresos mensuales, cuotas pagadas vs. pendientes.
+
+AsistenciasResumen: asistencia promedio por materia, por profesor, por carrera.
+
+RendimientoCarrera: promedios generales por carrera, por año, por cohorte.
+
+🧾 7. Área de Comunicación y Soporte
+
+Objetivo: interacción entre usuarios.
+
+MensajesInternos: emisor, receptor, asunto, contenido, fecha.
+
+Consultas / Tickets: estudiante o profesor, motivo, estado, respuesta.
+
+Encuestas / Satisfacción: formularios para recoger feedback.

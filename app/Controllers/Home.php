@@ -14,7 +14,11 @@ class Home extends BaseController
      */
     public function index(): string // Devuelve el contenido HTML de la vista renderizada
     {
-        // Carga y devuelve la vista ubicada en 'app/Views/index.php'.
-        return view('index');
+        // FORZAMOS LA ESTRUCTURA CORRECTA
+        // 1. Prepara los datos que se pasarán a la plantilla principal.
+        // 2. Le decimos que el contenido principal ('content') será la vista 'index.php'.
+        $data['page_content'] = view('index');
+        // 3. Cargamos la plantilla 'layout.php' y le pasamos el contenido.
+        return view('templates/layout', $data);
     }
 }
