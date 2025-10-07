@@ -1,7 +1,7 @@
 <?php
 
-// Define el espacio de nombres para la sección de Administración.
-namespace App\Controllers\Admin;
+// Define el espacio de nombres del controlador.
+namespace App\Controllers;
 use App\Controllers\BaseController;
 // Importa los modelos que este controlador necesita para funcionar.
 use App\Models\EstudianteModel;

@@ -6,11 +6,13 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Controllers\\Ajax' => $baseDir . '/app/Controllers/Ajax.php',
+    'App\\Controllers\\AjaxController' => $baseDir . '/app/Controllers/AjaxController.php',
     'App\\Controllers\\BaseController' => $baseDir . '/app/Controllers/BaseController.php',
+    'App\\Controllers\\Carreras' => $baseDir . '/app/Controllers/Carreras.php',
     'App\\Controllers\\Categorias' => $baseDir . '/app/Controllers/Categorias.php',
     'App\\Controllers\\Estudiantes' => $baseDir . '/app/Controllers/Estudiantes.php',
     'App\\Controllers\\Home' => $baseDir . '/app/Controllers/Home.php',
-    'App\\Controllers\\RegistrarCarrera' => $baseDir . '/app/Controllers/RegistrarCarrera.php',
     'App\\Database\\Seeds\\CarreraSeeder' => $baseDir . '/app/Database/Seeds/CarreraSeeder.php',
     'App\\Database\\Seeds\\CategoriaSeeder' => $baseDir . '/app/Database/Seeds/CategoriaSeeder.php',
     'App\\Database\\Seeds\\DatabaseSeeder' => $baseDir . '/app/Database/Seeds/DatabaseSeeder.php',
