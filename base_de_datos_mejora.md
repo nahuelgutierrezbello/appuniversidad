@@ -1,3 +1,4 @@
+commit
 -- ==============================================
 -- 🏫 BASE DE DATOS UNIVERSITARIA COMPLETA
 -- Incluye estructura base + ampliaciones académicas
