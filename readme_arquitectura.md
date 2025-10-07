@@ -1,7 +1,7 @@
 # Informe Técnico: Arquitectura y Decisiones de Diseño
 
 Este documento detalla la arquitectura, las decisiones técnicas y las consideraciones de rendimiento del Sistema de Gestión Académica.
-
+//
 ## 1. Arquitectura del Proyecto
 
 El sistema está construido sobre **CodeIgniter 4**, siguiendo estrictamente el patrón de diseño **Modelo-Vista-Controlador (MVC)** para garantizar una clara separación de responsabilidades y facilitar el mantenimiento.
