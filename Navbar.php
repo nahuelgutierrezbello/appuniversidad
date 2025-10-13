@@ -398,7 +398,10 @@
                             <li><a class="dropdown-item" href="<?= base_url('estudiantes'); ?>">Estudiantes</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="<?= base_url('registrarCarrera'); ?>">Profesores</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="<?= base_url('administradores'); ?>">Administradores</a></li>
                         </ul>
+                        
                     </li>
                 </ul>
             </div>

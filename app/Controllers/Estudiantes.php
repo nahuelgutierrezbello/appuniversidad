@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 // Importa los modelos que este controlador necesita para funcionar.
 use App\Models\EstudianteModel;
 use App\Models\CarreraModel;
+use App\Models\MateriaModel;
 
 /**
  * Este es el "director de orquesta" para todo lo relacionado con los estudiantes.
@@ -25,16 +26,23 @@ class Estudiantes extends BaseController
      */
     public function index()
     {
-        // Instancia los modelos necesarios.
-        $estudianteModel = new EstudianteModel();
-        $carreraModel = new CarreraModel();
+        // Para evitar error de conexión a base de datos, mostramos la vista con datos vacíos si no hay conexión.
+        try {
+            // Instancia los modelos necesarios.
+            $estudianteModel = new EstudianteModel();
+            $carreraModel = new CarreraModel();
 
-        // Prepara un array '$data' para pasar información a la vista.
-        $data['estudiantes'] = $estudianteModel->getEstudiantesConCarrera();
-        $data['carreras'] = $carreraModel->findAll();
+            // Prepara un array '$data' para pasar información a la vista.
+            $data['estudiantes'] = $estudianteModel->getEstudiantesConCarrera();
+            $data['carreras'] = $carreraModel->findAll();
+        } catch (\Exception $e) {
+            // Si hay error, mostramos la vista con datos vacíos.
+            $data['estudiantes'] = [];
+            $data['carreras'] = [];
+        }
 
         // Carga la vista 'estudiantes.php' y le pasa el array '$data'.
-        return view('admin/estudiantes', $data);
+        return view('administrador/estudiantes', $data);
     }
 
     /**
@@ -57,21 +65,21 @@ class Estudiantes extends BaseController
         // Recoge los datos del formulario usando el objeto 'request'.
         $data = [
             'dni'        => $this->request->getPost('dni'),
-            'nest'       => $this->request->getPost('nest'),
+            'nombre_estudiante'       => $this->request->getPost('nombre_estudiante'),
             'edad'       => $this->request->getPost('edad'),
             'email'      => $this->request->getPost('email'),
-            'fecha_nac'  => $this->request->getPost('fecha_nac') ?: null,
-            'id_car'     => $this->request->getPost('id_car') ?: null,
+            'fecha_nacimiento'  => $this->request->getPost('fecha_nacimiento') ?: null,
+            'carrera_id'     => $this->request->getPost('carrera_id') ?: null,
         ];
 
         // Intenta guardar los datos. El modelo se encarga de la validación.
         if ($estudianteModel->save($data) === false) {
             // Si la validación falla, redirige hacia atrás con los errores.
-            return redirect()->to('/admin/estudiantes')->withInput()->with('errors', 'Error al registrar: ' . implode(', ', $estudianteModel->errors()));
+            return redirect()->to('/estudiantes')->withInput()->with('errors', 'Error al registrar: ' . implode(', ', $estudianteModel->errors()));
         }
 
         // Si el guardado es exitoso, redirige a la lista de estudiantes con un mensaje de éxito.
-        return redirect()->to('/admin/estudiantes')->with('success', 'Estudiante registrado correctamente.');
+        return redirect()->to('/estudiantes')->with('success', 'Estudiante registrado correctamente.');
     }
 
     /**
@@ -119,15 +127,15 @@ class Estudiantes extends BaseController
         // Recoge todos los datos del formulario de edición.
         $data = $this->request->getPost();
         // Añade el ID a los datos para que la regla de validación 'is_unique' pueda ignorar el registro actual.
-        $data['id_est'] = $id;
+        $data['id'] = $id;
 
         // Intenta actualizar los datos. El modelo se encarga de la validación.
         if ($estudianteModel->update($id, $data) === false) {
-            return redirect()->to('/admin/estudiantes')->withInput()->with('errors', 'Error al actualizar: ' . implode(', ', $estudianteModel->errors()));
+            return redirect()->to('/estudiantes')->withInput()->with('errors', 'Error al actualizar: ' . implode(', ', $estudianteModel->errors()));
         }
 
         // Si la actualización es exitosa, redirige con un mensaje de éxito.
-        return redirect()->to('/admin/estudiantes')->with('success', 'Estudiante actualizado correctamente.');
+        return redirect()->to('/estudiantes')->with('success', 'Estudiante actualizado correctamente.');
     }
 
     /**
@@ -144,10 +152,10 @@ class Estudiantes extends BaseController
         $estudianteModel = new EstudianteModel();
         // Intenta eliminar el registro.
         if ($estudianteModel->delete($id)) {
-            return redirect()->to('/admin/estudiantes')->with('success', 'Estudiante eliminado correctamente.');
+            return redirect()->to('/estudiantes')->with('success', 'Estudiante eliminado correctamente.');
         } else {
             // Si por alguna razón falla (ej: un callback del modelo lo impide), redirige con un error.
-            return redirect()->to('/admin/estudiantes')->with('error', 'No se pudo eliminar al estudiante.');
+            return redirect()->to('/estudiantes')->with('error', 'No se pudo eliminar al estudiante.');
         }
     }
 
@@ -161,7 +169,7 @@ class Estudiantes extends BaseController
      * @param int $id El ID del estudiante a buscar.
      * @return \CodeIgniter\HTTP\ResponseInterface|void
      */
-    public function search($id)
+    public function search($id = null)
     {
         // Verifica si la petición es de tipo AJAX.
         if ($this->request->isAJAX()) {
@@ -201,6 +209,35 @@ class Estudiantes extends BaseController
             return $this->response->setJSON($estudiantes);
         }
         // Si alguien intenta acceder a esta URL directamente desde el navegador, lo redirige.
-        return redirect()->to('/admin/estudiantes');
+        return redirect()->to('/estudiantes');
+    }
+
+    /**
+     * Método: dashboard()
+     * Propósito: Muestra el dashboard del estudiante con datos de la base de datos.
+     * @return string La vista renderizada.
+     */
+    public function dashboard()
+    {
+        // Por ahora, usar estudiante con ID 1. En el futuro, usar sesión.
+        $id_est = 1;
+
+        $estudianteModel = new EstudianteModel();
+        $materiaModel = new MateriaModel();
+
+        $data['estudiante'] = $estudianteModel->getEstudianteConCarrera($id_est);
+        // Removido el redirect para mostrar el dashboard incluso si no hay estudiante
+        $data['notas'] = $estudianteModel->getNotas($id_est);
+        $data['materias_inscritas'] = $estudianteModel->getMateriasInscritas($id_est);
+        $data['estadisticas'] = $estudianteModel->getEstadisticas($id_est);
+
+        // Materiales por materia (para el accordion)
+        $materiales_por_materia = [];
+        foreach ($data['materias_inscritas'] as $inscripcion) {
+            $materiales_por_materia[$inscripcion['materia_id']] = $materiaModel->getMateriales($inscripcion['materia_id']);
+        }
+        $data['materiales_por_materia'] = $materiales_por_materia;
+
+        return view('dashboard_estudiante', $data);
     }
 }

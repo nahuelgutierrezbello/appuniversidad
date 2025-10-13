@@ -13,8 +13,8 @@ Options -Indexes
 
 	# If you installed CodeIgniter in a subfolder, you will need to
 	# change the following line to match the subfolder you need.
-	# http://httpd.apache.org/docs/current/mod/mod_rewrite.html#rewritebase
-	RewriteBase /appuniversidad/public/
+	# http://httpd.apache.org/docs/current/mod/reWrite.html#rewritebase
+	RewriteBase /appuniversidad/
 
 	# Redirect Trailing Slashes...
 	RewriteCond %{REQUEST_FILENAME} !-d
@@ -31,7 +31,7 @@ Options -Indexes
 	# request to the front controller, index.php
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule ^([\s\S]*)$ index.php/$1 [L,NC,QSA]
+	RewriteRule ^([\s\S]*)$ public/index.php/$1 [L,NC,QSA]
 
 	# Ensure Authorization header is passed along
 	RewriteCond %{HTTP:Authorization} .
@@ -41,7 +41,7 @@ Options -Indexes
 <IfModule !mod_rewrite.c>
 	# If we don't have mod_rewrite installed, all 404's
 	# can be sent to index.php, and everything works as normal.
-	ErrorDocument 404 index.php
+	ErrorDocument 404 public/index.php
 </IfModule>
 
 # Disable server signature start
