@@ -10,7 +10,7 @@ $routes->setDefaultNamespace('App\Controllers');
 $routes->setDefaultController('Home');
 $routes->setDefaultMethod('index');
 $routes->setTranslateURIDashes(false);
-$routes->set404Override(); 
+$routes->set404Override();
 
 use CodeIgniter\Router\RouteCollection;
 
@@ -21,52 +21,103 @@ use CodeIgniter\Router\RouteCollection;
 
 // --- RUTAS PRINCIPALES DE VISTAS ---
 // Estas rutas se encargan de mostrar las páginas principales de cada módulo.
-
 $routes->get('/', 'Home::index'); // Muestra la página de inicio institucional.
 $routes->get('/home/index', 'Home::index');     // Alias para la página de inicio.
-$routes->get('/estudiantes', 'Estudiantes::index'); // Muestra el portal de gestión de estudiantes.
-$routes->get('/registrarCarrera', 'RegistrarCarrera::index'); // Muestra el portal de gestión de carreras.
-$routes->get('categorias', 'Categorias::index'); // Muestra el portal de gestión de categorías.
-
-// --- RUTAS PARA EL CRUD DE ESTUDIANTES ---
-// Definen las acciones para crear, leer, actualizar y borrar estudiantes.
-
-$routes->post('estudiantes/registrar', 'Estudiantes::registrar'); // Procesa el formulario para crear un nuevo estudiante.
-$routes->get('estudiantes/edit/(:num)', 'Estudiantes::edit/$1'); // Obtiene datos de un estudiante para el modal de edición (AJAX). (:num) es un placeholder para un número (el ID).
-$routes->post('estudiantes/update/(:num)', 'Estudiantes::update/$1'); // Procesa el formulario para actualizar un estudiante.
-$routes->post('estudiantes/delete/(:num)', 'Estudiantes::delete/$1'); // Procesa la petición para eliminar un estudiante. Se usa POST por seguridad.
-$routes->get('estudiantes/search/(:num)', 'Estudiantes::search/$1'); // Busca un estudiante por ID (AJAX).
-$routes->get('estudiantes/search/carrera/(:num)', 'Estudiantes::searchByCareer/$1'); // Busca todos los estudiantes de una carrera (AJAX).
-
-// --- RUTAS PARA EL CRUD DE CATEGORÍAS ---
-// Definen las acciones para el módulo de categorías.
-
-$routes->post('categorias/registrar', 'Categorias::registrar'); // Procesa el formulario para crear una nueva categoría.
-$routes->get('categorias/edit/(:num)', 'Categorias::edit/$1'); // Obtiene datos de una categoría para el modal de edición (AJAX).
-$routes->post('categorias/update/(:num)', 'Categorias::update/$1'); // Procesa el formulario para actualizar una categoría.
-$routes->post('categorias/delete/(:num)', 'Categorias::delete/$1'); // Procesa la petición para eliminar una categoría.
-$routes->get('categorias/search/(:num)', 'Categorias::search/$1'); // Busca una categoría por ID (AJAX).
-
-// --- RUTAS PARA EL CRUD DE CARRERAS ---
-// Definen las acciones para el módulo de carreras.
-
-$routes->post('registrarCarrera/registrar', 'RegistrarCarrera::registrar'); // Procesa el formulario para crear una nueva carrera.
-$routes->get('registrarCarrera/edit/(:num)', 'RegistrarCarrera::edit/$1'); // Obtiene datos de una carrera para el modal de edición (AJAX).
-$routes->post('registrarCarrera/update/(:num)', 'RegistrarCarrera::update/$1'); // Procesa el formulario para actualizar una carrera.
-$routes->post('registrarCarrera/delete/(:num)', 'RegistrarCarrera::delete/$1'); // Procesa la petición para eliminar una carrera.
-$routes->get('registrarCarrera/search/(:num)', 'RegistrarCarrera::search/$1'); // Busca una carrera por ID (AJAX).
-
-// Ruta especial para la generación de código de carrera en tiempo real (AJAX).
-// (:segment) es un placeholder para cualquier caracter en la URL (el nombre de la carrera).
-$routes->get('registrarCarrera/generar-codigo/(:segment)', 'RegistrarCarrera::generarCodigoAjax/$1');
 
 // --- RUTAS PARA CARGA DE CONTENIDO DINÁMICO (AJAX) ---
 // Estas rutas son usadas por JavaScript para cargar el contenido de las carreras dinámicamente.
-$routes->get('ajax/oferta_academica_default', 'AjaxController::oferta_academica_default');
-$routes->get('ajax/ciencia_datos', 'AjaxController::ciencia_datos');
-$routes->get('ajax/programacion_web', 'AjaxController::programacion_web');
-$routes->get('ajax/profesorado_matematica', 'AjaxController::profesorado_matematica');
-$routes->get('ajax/profesorado_ingles', 'AjaxController::profesorado_ingles');
-$routes->get('ajax/educacion_inicial', 'AjaxController::educacion_inicial');
-$routes->get('ajax/enfermeria', 'AjaxController::enfermeria');
-$routes->get('ajax/seguridad_higiene', 'AjaxController::seguridad_higiene');
+$routes->group('ajax', static function ($routes) {
+    $routes->get('oferta_academica_default', 'AjaxController::oferta_academica_default');
+    $routes->get('ciencia_datos', 'AjaxController::ciencia_datos');
+    $routes->get('programacion_web', 'AjaxController::programacion_web');
+    $routes->get('profesorado_matematica', 'AjaxController::profesorado_matematica');
+    $routes->get('profesorado_ingles', 'AjaxController::profesorado_ingles');
+    $routes->get('educacion_inicial', 'AjaxController::educacion_inicial');
+    $routes->get('enfermeria', 'AjaxController::enfermeria');
+    $routes->get('seguridad_higiene', 'AjaxController::seguridad_higiene');
+});
+
+// --- RUTAS DE GESTIÓN (CRUDs) ---
+
+// --- ESTUDIANTES ---
+$routes->get('acceso/estudiantes', 'Estudiantes::dashboard');
+$routes->get('acceso/profesores', 'Profesores::dashboard');
+$routes->post('estudiantes/registrar', 'Estudiantes::registrar');
+$routes->get('estudiantes/edit/(:num)', 'Estudiantes::edit/$1');
+$routes->post('estudiantes/update/(:num)', 'Estudiantes::update/$1');
+$routes->post('estudiantes/delete/(:num)', 'Estudiantes::delete/$1');
+$routes->get('estudiantes/search/(:num)', 'Estudiantes::search/$1');
+$routes->get('estudiantes/search/carrera/(:num)', 'Estudiantes::searchByCareer/$1');
+
+// --- CARRERAS ---
+$routes->get('carreras', 'RegistrarCarrera::index');
+$routes->post('carreras/registrar', 'RegistrarCarrera::registrar');
+$routes->get('carreras/edit/(:num)', 'RegistrarCarrera::edit/$1');
+$routes->post('carreras/update/(:num)', 'RegistrarCarrera::update/$1');
+$routes->post('carreras/delete/(:num)', 'RegistrarCarrera::delete/$1');
+$routes->get('carreras/search/(:num)', 'RegistrarCarrera::search/$1');
+$routes->get('carreras/generar-codigo/(:segment)', 'RegistrarCarrera::generarCodigoAjax/$1');
+
+// --- CATEGORÍAS ---
+$routes->get('categorias', 'Categorias::index');
+$routes->post('categorias/registrar', 'Categorias::registrar');
+$routes->get('categorias/edit/(:num)', 'Categorias::edit/$1');
+$routes->post('categorias/update/(:num)', 'Categorias::update/$1');
+$routes->post('categorias/delete/(:num)', 'Categorias::delete/$1');
+$routes->get('categorias/search/(:num)', 'Categorias::search/$1');
+
+// --- ADMINISTRADORES ---
+$routes->get('administradores', 'Administradores::index');
+$routes->post('administradores/registrar', 'Administradores::registrar');
+$routes->get('administradores/edit/(:num)', 'Administradores::edit/$1');
+$routes->post('administradores/update/(:num)', 'Administradores::update/$1');
+$routes->post('administradores/delete/(:num)', 'Administradores::delete/$1');
+$routes->get('administradores/search/(:num)', 'Administradores::search/$1');
+
+// --- PROFESORES ---
+$routes->get('profesores', 'Profesores::index');
+$routes->post('profesores/registrar', 'Profesores::registrar');
+$routes->get('profesores/edit/(:num)', 'Profesores::edit/$1');
+$routes->post('profesores/update/(:num)', 'Profesores::update/$1');
+$routes->post('profesores/delete/(:num)', 'Profesores::delete/$1');
+$routes->get('profesores/search/(:num)', 'Profesores::search/$1');
+
+// --- RUTAS PARA ADMINISTRADOR ---
+$routes->get('administrador/estudiantes', 'Estudiantes::index');
+$routes->get('administrador/profesores', 'Profesores::index');
+$routes->get('administrador/carreras', 'RegistrarCarrera::index');
+$routes->get('administrador/categorias', 'Categorias::index');
+$routes->get('administrador/administradores', 'Administradores::index');
+$routes->get('administrador/modalidades', 'Modalidades::index');
+$routes->get('administrador/rol', 'Rol::index');
+$routes->get('administrador/materias', 'Materias::index');
+$routes->get('administrador/usuarios', 'Usuarios::index');
+
+// --- RUTAS CRUD PARA NUEVOS MÓDULOS ---
+$routes->get('rol', 'Rol::index');
+$routes->post('rol/registrar', 'Rol::registrar');
+$routes->get('rol/edit/(:num)', 'Rol::edit/$1');
+$routes->post('rol/update/(:num)', 'Rol::update/$1');
+$routes->post('rol/delete/(:num)', 'Rol::delete/$1');
+$routes->get('rol/search/(:num)', 'Rol::search/$1');
+
+$routes->get('usuarios', 'Usuarios::index');
+$routes->post('usuarios/registrar', 'Usuarios::registrar');
+$routes->get('usuarios/edit/(:num)', 'Usuarios::edit/$1');
+$routes->post('usuarios/update/(:num)', 'Usuarios::update/$1');
+$routes->post('usuarios/delete/(:num)', 'Usuarios::delete/$1');
+$routes->get('usuarios/search/(:num)', 'Usuarios::search/$1');
+
+$routes->get('materias', 'Materias::index');
+$routes->post('materias/registrar', 'Materias::registrar');
+$routes->get('materias/edit/(:num)', 'Materias::edit/$1');
+$routes->post('materias/update/(:num)', 'Materias::update/$1');
+$routes->post('materias/delete/(:num)', 'Materias::delete/$1');
+$routes->get('materias/search/(:num)', 'Materias::search/$1');
+
+$routes->get('modalidades', 'Modalidades::index');
+$routes->post('modalidades/registrar', 'Modalidades::registrar');
+$routes->get('modalidades/edit/(:num)', 'Modalidades::edit/$1');
+$routes->post('modalidades/update/(:num)', 'Modalidades::update/$1');
+$routes->post('modalidades/delete/(:num)', 'Modalidades::delete/$1');
+$routes->get('modalidades/search/(:num)', 'Modalidades::search/$1');

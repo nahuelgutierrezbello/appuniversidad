@@ -86,6 +86,94 @@ $(document).ready(function () {
     // Evento de clic para el botón "Limpiar" en la búsqueda por ID.
     $('#clearStudentDetails').on('click', () => $('#studentDetails').addClass('d-none'));
 
+    // --- Lógica para Profesores ---
+
+    // Evento de clic para los botones de "Editar" en la tabla de profesores.
+    $('#profsTable').on('click', '.edit-btn', function () {
+        // Obtiene el ID del profesor desde el atributo 'data-id' del botón.
+        const profId = $(this).data('id');
+
+        // Petición AJAX para obtener los datos del profesor desde el servidor.
+        $.ajax({
+            url: `${BASE_URL}profesores/edit/${profId}`,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) { // Se ejecuta si la petición es exitosa.
+                // Rellena los campos del formulario del modal de edición con los datos recibidos.
+                $('#edit_id').val(response.id);
+                $('#edit_nombre_profesor').val(response.nombre_profesor);
+                $('#edit_legajo').val(response.legajo);
+                // Actualiza la URL del 'action' del formulario para que apunte al método de actualización correcto.
+                $('#editProfForm').attr('action', `${BASE_URL}profesores/update/${profId}`);
+            },
+            error: function() { // Se ejecuta si hay un error en la petición.
+                Swal.fire('Error', 'No se pudieron cargar los datos del profesor.', 'error');
+            }
+        });
+    });
+
+    // Evento de envío para el formulario de búsqueda de profesor por ID.
+    $('#searchProfForm').on('submit', function(e) {
+        e.preventDefault(); // Previene que el formulario se envíe y recargue la página.
+        // Obtiene el ID del profesor del campo de entrada.
+        const profId = $('#searchProfId').val();
+        // Si el campo está vacío, no hace nada.
+        if (!profId) return;
+
+        // Petición AJAX para buscar al profesor.
+        $.ajax({
+            url: `${BASE_URL}profesores/search/${profId}`,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                $('#detailId').text(response.id);
+                $('#detailLegajo').text(response.legajo);
+                $('#detailName').text(response.nombre_profesor);
+                // Muestra el contenedor de detalles que estaba oculto.
+                $('#profDetails').removeClass('d-none');
+            },
+            error: function(xhr) {
+                // Muestra un mensaje de error si el profesor no se encuentra.
+                const errorMsg = xhr.responseJSON ? xhr.responseJSON.error : 'Error al buscar.';
+                Swal.fire('Error', errorMsg, 'error');
+            }
+        });
+    });
+
+    // Evento de clic para el botón "Limpiar" en la búsqueda por ID de profesor.
+    $('#clearProfDetails').on('click', () => $('#profDetails').addClass('d-none'));
+
+    // Evento de envío para el formulario de búsqueda de profesor por legajo.
+    $('#searchProfByLegajoForm').on('submit', function(e) {
+        e.preventDefault(); // Previene que el formulario se envíe y recargue la página.
+        // Obtiene el legajo del profesor del campo de entrada.
+        const profLegajo = $('#searchProfLegajo').val();
+        // Si el campo está vacío, no hace nada.
+        if (!profLegajo) return;
+
+        // Petición AJAX para buscar al profesor por legajo.
+        $.ajax({
+            url: `${BASE_URL}profesores/searchByLegajo/${profLegajo}`,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                $('#detailIdByLegajo').text(response.id);
+                $('#detailLegajoByLegajo').text(response.legajo);
+                $('#detailNameByLegajo').text(response.nombre_profesor);
+                // Muestra el contenedor de detalles que estaba oculto.
+                $('#profDetailsByLegajo').removeClass('d-none');
+            },
+            error: function(xhr) {
+                // Muestra un mensaje de error si el profesor no se encuentra.
+                const errorMsg = xhr.responseJSON ? xhr.responseJSON.error : 'Error al buscar.';
+                Swal.fire('Error', errorMsg, 'error');
+            }
+        });
+    });
+
+    // Evento de clic para el botón "Limpiar" en la búsqueda por legajo de profesor.
+    $('#clearProfDetailsByLegajo').on('click', () => $('#profDetailsByLegajo').addClass('d-none'));
+
     // Evento de envío para el formulario de búsqueda de estudiantes por carrera.
     $('#searchStudentByCareerForm').on('submit', function(e) {
         e.preventDefault();
@@ -159,7 +247,7 @@ $(document).ready(function () {
             const nombreCodificado = encodeURIComponent(nombreCarrera);
 
             $.ajax({
-                url: `${BASE_URL}registrarCarrera/generar-codigo/${nombreCodificado}`,
+                url: `${BASE_URL}carreras/generar-codigo/${nombreCodificado}`,
                 type: 'GET',
                 dataType: 'json',
                 success: function(response) {
@@ -184,7 +272,7 @@ $(document).ready(function () {
         const careerId = $(this).data('id');
 
         $.ajax({
-            url: `${BASE_URL}registrarCarrera/edit/${careerId}`,
+            url: `${BASE_URL}carreras/edit/${careerId}`,
             type: 'GET',
             dataType: 'json',
             success: function(response) {
@@ -193,7 +281,7 @@ $(document).ready(function () {
                 $('#edit_codcar').val(response.codcar);
                 $('#edit_id_cat').val(response.id_cat);
                 $('#edit_modalidad').val(response.id_mod);
-                $('#editCareerForm').attr('action', `${BASE_URL}registrarCarrera/update/${careerId}`);
+                $('#editCareerForm').attr('action', `${BASE_URL}carreras/update/${careerId}`);
             },
             error: function() {
                 Swal.fire('Error', 'No se pudieron cargar los datos de la carrera.', 'error');
@@ -324,7 +412,7 @@ $(document).ready(function () {
         contentContainer.fadeOut(200, function() {
             // Realiza la petición AJAX
             $.ajax({
-                url: url, // CORRECCIÓN: La variable 'url' ya contiene la ruta relativa necesaria.
+                url: `${BASE_URL}${url}`, // CORRECCIÓN: Usamos la URL base para asegurar que la ruta sea siempre correcta.
                 type: 'GET',
                 success: function(response) {
                     let finalHtml = response;
@@ -384,6 +472,13 @@ $(document).ready(function () {
                 ajaxTestLoaded = true;
             });
         }
+    });
+
+    // --- Lógica para selección de carrera en página de materias ---
+    $('#carreraSelect').on('change', function() {
+        const selectedCarreraId = $(this).val();
+        const url = `${BASE_URL}administrador/materias${selectedCarreraId ? '?carrera_id=' + selectedCarreraId : ''}`;
+        window.location.href = url;
     });
 
 

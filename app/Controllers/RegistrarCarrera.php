@@ -1,7 +1,7 @@
 <?php
 
 // Define el espacio de nombres para la sección de Administración.
-namespace App\Controllers\Admin;
+namespace App\Controllers;
 use App\Controllers\BaseController;
 // Importa los modelos necesarios.
 use App\Models\CarreraModel;
@@ -26,18 +26,26 @@ class RegistrarCarrera extends BaseController
      */
     public function index()
     {
-        // Instancia los modelos.
-        $carreraModel = new CarreraModel();
-        $categoriaModel = new CategoriaModel();
-        $modalidadModel = new ModalidadModel();
+        // Para evitar error de conexión a base de datos, mostramos la vista con datos vacíos si no hay conexión.
+        try {
+            // Instancia los modelos.
+            $carreraModel = new CarreraModel();
+            $categoriaModel = new CategoriaModel();
+            $modalidadModel = new ModalidadModel();
 
-        // Prepara el array '$data' para la vista.
-        $data['carreras'] = $carreraModel->findAll();
-        $data['categorias'] = $categoriaModel->findAll();
-        $data['modalidades'] = $modalidadModel->findAll();
+            // Prepara el array '$data' para la vista.
+            $data['carreras'] = $carreraModel->findAll();
+            $data['categorias'] = $categoriaModel->findAll();
+            $data['modalidades'] = $modalidadModel->findAll();
+        } catch (\Exception $e) {
+            // Si hay error, mostramos la vista con datos vacíos.
+            $data['carreras'] = [];
+            $data['categorias'] = [];
+            $data['modalidades'] = [];
+        }
 
         // Carga la vista y le pasa los datos.
-        return view('admin/registrarCarrera', $data);
+        return view('administrador/registrarCarrera', $data);
     }
 
     /**
@@ -67,11 +75,11 @@ class RegistrarCarrera extends BaseController
         // Intenta guardar los datos. El modelo se encarga de la validación.
         if ($model->save($data) === false) {
             // Si falla, redirige hacia atrás con los datos y los errores.
-            return redirect()->to('/admin/carreras')->withInput()->with('errors', 'Error al registrar: ' . implode(', ', $model->errors()));
+            return redirect()->to('/carreras')->withInput()->with('errors', 'Error al registrar: ' . implode(', ', $model->errors()));
         }
 
         // Si es exitoso, redirige a la lista de carreras con un mensaje de éxito.
-        return redirect()->to('/admin/carreras')->with('success', 'Carrera registrada correctamente.');
+        return redirect()->to('/carreras')->with('success', 'Carrera registrada correctamente.');
     }
 
     /**
@@ -123,11 +131,11 @@ class RegistrarCarrera extends BaseController
 
         // Intenta actualizar los datos. El modelo se encarga de la validación.
         if ($model->update($id, $data) === false) {
-            return redirect()->to('/admin/carreras')->withInput()->with('errors', 'Error al actualizar: ' . implode(', ', $model->errors()));
+            return redirect()->to('/carreras')->withInput()->with('errors', 'Error al actualizar: ' . implode(', ', $model->errors()));
         }
 
         // Si es exitoso, redirige con un mensaje de éxito.
-        return redirect()->to('/admin/carreras')->with('success', 'Carrera actualizada correctamente.');
+        return redirect()->to('/carreras')->with('success', 'Carrera actualizada correctamente.');
     }
 
     /**
@@ -143,10 +151,10 @@ class RegistrarCarrera extends BaseController
         $model = new CarreraModel();
         // Intenta eliminar el registro.
         if ($model->delete($id)) {
-            return redirect()->to('/admin/carreras')->with('success', 'Carrera eliminada correctamente.');
+            return redirect()->to('/carreras')->with('success', 'Carrera eliminada correctamente.');
         } else {
             // Si falla, redirige con un mensaje de error.
-            return redirect()->to('/admin/carreras')->with('error', 'No se pudo eliminar la carrera.');
+            return redirect()->to('/carreras')->with('error', 'No se pudo eliminar la carrera.');
         }
     }
 

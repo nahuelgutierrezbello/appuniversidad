@@ -15,8 +15,8 @@ class CreateTablaProfesor extends Migration
     {
         // Define la estructura de la tabla 'Profesor'.
         $this->forge->addField([
-            // Campo 'id_prof': Clave primaria, autoincremental.
-            'id_prof' => [
+            // Campo 'id': Clave primaria, autoincremental.
+            'id' => [
                 'type'           => 'BIGINT',
                 'unsigned'       => true,
                 'auto_increment' => true
@@ -27,15 +27,15 @@ class CreateTablaProfesor extends Migration
                 'unique'     => true,
                 'null'       => false
             ],
-            // Campo 'nprof': Nombre del profesor.
-            'nprof' => [
+            // Campo 'nombre_profesor': Nombre del profesor.
+            'nombre_profesor' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 80,
                 'null'       => false
             ],
         ]);
-        // Define 'id_prof' como la clave primaria.
-        $this->forge->addKey('id_prof', true); // La clave única 'legajo' ya se define en addField.
+        // Define 'id' como la clave primaria.
+        $this->forge->addKey('id', true); // La clave única 'legajo' ya se define en addField.
         // Crea la tabla 'Profesor'.
         $this->forge->createTable('Profesor');
     }

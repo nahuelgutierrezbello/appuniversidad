@@ -32,9 +32,11 @@
                         <i class="fas fa-sign-in-alt me-1"></i> Acceso
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownAcceso">
-                        <li><a class="dropdown-item" href="<?= base_url('estudiantes'); ?>">Estudiantes</a></li>
+                        <li><a class="dropdown-item" href="<?= base_url('acceso/estudiantes'); ?>">Estudiantes</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="<?= base_url('registrarCarrera'); ?>">Profesores</a></li>
+                        <li><a class="dropdown-item" href="<?= base_url('acceso/profesores'); ?>">Profesores</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="<?= base_url('administradores'); ?>">Administradores</a></li>
                     </ul>
                 </li>
             </ul>
