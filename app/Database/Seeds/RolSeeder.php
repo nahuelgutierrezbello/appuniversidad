@@ -22,9 +22,9 @@ class RolSeeder extends Seeder
 
         // Define un array con los nombres de los roles.
         $roles = [
-            ['nrol' => 'admin'],
-            ['nrol' => 'profesor'],
-            ['nrol' => 'alumno'],
+            ['nombre_rol' => 'admin'],
+            ['nombre_rol' => 'profesor'],
+            ['nombre_rol' => 'alumno'],
         ];
 
         // Inserta el lote de roles en la base de datos.

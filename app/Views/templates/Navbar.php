@@ -6,7 +6,7 @@ $usuario = $session->get('usuario'); // puede ser el email o nombre según tu im
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top" id="mainNav">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="<?= base_url(); ?>">
+        <a class="navbar-brand d-flex align-items-center" href="#" id="logo-exit-link-estudiante">
             <i class="fas fa-university me-2"></i>
             <span>Instituto Superior 57</span>
         </a>

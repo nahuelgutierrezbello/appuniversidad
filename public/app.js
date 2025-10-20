@@ -276,11 +276,11 @@ $(document).ready(function () {
             type: 'GET',
             dataType: 'json',
             success: function(response) {
-                $('#edit_id_car').val(response.id_car);
-                $('#edit_ncar').val(response.ncar);
-                $('#edit_codcar').val(response.codcar);
-                $('#edit_id_cat').val(response.id_cat);
-                $('#edit_modalidad').val(response.id_mod);
+                $('#edit_id_car').val(response.id);
+                $('#edit_ncar').val(response.nombre_carrera);
+                $('#edit_codcar').val(response.codigo_carrera);
+                $('#edit_id_cat').val(response.categoria_id);
+                $('#edit_modalidad').val(response.modalidad_id);
                 $('#editCareerForm').attr('action', `${BASE_URL}carreras/update/${careerId}`);
             },
             error: function() {
@@ -359,7 +359,7 @@ $(document).ready(function () {
     // --- Lógica para carga dinámica de carreras en la página de inicio ---
 
     // Manejador de eventos genérico para todos los enlaces de carreras
-    $('body').on('click', 'a[id$="-link"], a[id^="ver-detalle-"]', function(e) {
+    $('#navbarDropdownOfertaAcademica ~ .dropdown-menu').on('click', 'a[id$="-link"], a[id^="ver-detalle-"]', function(e) {
         e.preventDefault();
         const id = $(this).attr('id');
         let url = '';
@@ -481,6 +481,67 @@ $(document).ready(function () {
         window.location.href = url;
     });
 
+    // --- Lógica para confirmación de salida en el logo del admin ---
+    $('#logo-exit-link').on('click', function(e) {
+        e.preventDefault(); // Previene la navegación inmediata
+        const href = BASE_URL; // URL de destino
 
+        Swal.fire({
+            title: '¿Realmente quieres salir?',
+            text: 'Vas a salir del panel de administración.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, salir',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = href; // Navega si confirma
+            }
+        });
+    });
+
+    // --- Lógica para confirmación de salida en el logo del profesor ---
+    $('#logo-exit-link-profesor').on('click', function(e) {
+        e.preventDefault(); // Previene la navegación inmediata
+        const href = BASE_URL; // URL de destino
+
+        Swal.fire({
+            title: '¿Realmente quieres salir?',
+            text: 'Vas a salir del panel de profesor.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, salir',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = href; // Navega si confirma
+            }
+        });
+    });
+
+    // --- Lógica para confirmación de salida en el logo del estudiante ---
+    $('#logo-exit-link-estudiante').on('click', function(e) {
+        e.preventDefault(); // Previene la navegación inmediata
+        const href = BASE_URL; // URL de destino
+
+        Swal.fire({
+            title: '¿Realmente quieres salir?',
+            text: 'Vas a salir del panel de estudiante.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, salir',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = href; // Navega si confirma
+            }
+        });
+    });
 
 });

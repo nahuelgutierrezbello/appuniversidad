@@ -124,10 +124,9 @@ class EstudianteModel extends Model
      * @param int $id_est El ID del estudiante.
      * @return array Devuelve un array con promedio general, progreso, etc.
      */
-    public function getEstadisticas($id_est)
+    public function getEstadisticas(array $notas, array $inscritas): array
     {
         // Promedio general
-        $notas = $this->getNotas($id_est);
         $totalNotas = count($notas);
         $sumaNotas = 0;
         foreach ($notas as $nota) {
@@ -144,7 +143,6 @@ class EstudianteModel extends Model
         }
 
         // Total de materias inscritas
-        $inscritas = $this->getMateriasInscritas($id_est);
         $totalInscritas = count($inscritas);
 
         // Progreso (aprobadas / total inscritas * 100)
@@ -155,6 +153,87 @@ class EstudianteModel extends Model
             'materias_aprobadas' => $aprobadas,
             'materias_pendientes' => $totalInscritas - $aprobadas,
             'progreso' => $progreso
+        ];
+    }
+
+    /**
+     * Obtiene las asistencias individuales de un estudiante para una materia específica.
+     *
+     * @param int $inscripcion_id ID de la inscripción (conecta estudiante y materia).
+     * @return array Lista de asistencias con fecha y estado.
+     */
+    public function getAsistenciasIndividuales($inscripcion_id)
+    {
+        return $this->db->table('asistencia')
+            ->where('inscripcion_id', $inscripcion_id)
+            ->select('fecha, estado')
+            ->orderBy('fecha', 'ASC')
+            ->get()
+            ->getResultArray();
+    }
+
+    /**
+     * Obtiene y calcula los datos de asistencia de un estudiante para una materia específica.
+     *
+     * @param int $inscripcion_id ID de la inscripción (conecta estudiante y materia).
+     * @return array|null Datos calculados de asistencia o null si no se encuentra.
+     */
+    public function getDatosAsistencia($inscripcion_id)
+    {
+        // Paso 1: Obtener la inscripción y los datos de la materia.
+        // Se eliminan las columnas que no existen para evitar el error.
+        $inscripcion = $this->db->table('inscripcion i')
+            ->join('materia m', 'm.id = i.materia_id')
+            ->where('i.id', $inscripcion_id)
+            ->select('i.id as inscripcion_id, m.id as materia_id, m.nombre_materia')
+            ->get()->getRowArray();
+
+        if (!$inscripcion) {
+            return null; // Si no hay inscripción, no hay nada que calcular.
+        }
+
+        // Paso 2: Contar las asistencias del estudiante.
+        // Se usan los estados 'Presente', 'Ausente' según tu base de datos.
+        $asistencias = $this->db->table('asistencia')
+            ->where('inscripcion_id', $inscripcion_id)
+            ->select("COUNT(CASE WHEN estado = 'presente' THEN 1 END) as presentes")
+            ->select("COUNT(CASE WHEN estado = 'ausente' THEN 1 END) as ausentes")
+            ->select("COUNT(CASE WHEN estado = 'justificado' THEN 1 END) as justificados")
+            ->get()->getRowArray();
+
+        $total_clases_registradas = ($asistencias['presentes'] ?? 0) + ($asistencias['ausentes'] ?? 0);
+        $faltas_totales = $asistencias['ausentes'] ?? 0;
+
+        // Paso 3: Calcular porcentajes y datos para el gráfico.
+        $porcentaje_asistencia = ($total_clases_registradas > 0) ? (($asistencias['presentes'] ?? 0) / $total_clases_registradas) * 100 : 100;
+
+        // Paso 4: Definir reglas y calcular faltas restantes y estado.
+        // Usamos valores fijos como me pediste, en lugar de leerlos de la BD.
+        $max_faltas_promocion = 5;
+        $porcentaje_minimo_regular = 80;
+
+        // Calculamos el máximo de faltas para regularizar basado en el 80% de asistencia.
+        // Si hay 10 clases, se necesita 80% de asistencia, puede faltar a 2 (20%).
+        $max_faltas_regulares = floor($total_clases_registradas * (1 - ($porcentaje_minimo_regular / 100)));
+
+        $faltas_restantes_promocion = $max_faltas_promocion - $faltas_totales;
+
+        $estado_asistencia = 'ok';
+        if ($faltas_totales > $max_faltas_promocion) {
+            $estado_asistencia = 'solo_regular'; // Perdió promoción por faltas
+        }
+        if ($porcentaje_asistencia < $porcentaje_minimo_regular && $total_clases_registradas > 0) {
+            $estado_asistencia = 'libre'; // Quedó libre por faltas
+        }
+
+        // Paso 5: Devolver todos los datos estructurados.
+        return [
+            'materia' => $inscripcion,
+            'asistencias' => $asistencias,
+            'porcentaje_asistencia' => round($porcentaje_asistencia, 2),
+            'faltas_restantes_promocion' => $faltas_restantes_promocion > 0 ? $faltas_restantes_promocion : 0,
+            'faltas_restantes_regular' => ($max_faltas_regulares - $faltas_totales) > 0 ? ($max_faltas_regulares - $faltas_totales) : 0,
+            'estado_asistencia' => $estado_asistencia
         ];
     }
 }

@@ -22,11 +22,11 @@ class CategoriaSeeder extends Seeder
         // Define un array con los datos de las categorías que se van a insertar.
         // Cada elemento del array es una fila de la tabla.
         $categorias = [
-            ['codcat'=>'CAT-TEC', 'ncat'=>'TECNICATURAS SUPERIORES'],
-            ['codcat'=>'CAT-PROF', 'ncat'=>'PROFESORADOS'],
-            ['codcat'=>'CAT-EDUC', 'ncat'=>'EDUCACIÓN'], // Para futuras carreras
-            ['codcat'=>'CAT-SALUD', 'ncat'=>'SALUD'], // Para futuras carreras
-            ['codcat'=>'CAT-TECNO', 'ncat'=>'TECNOLOGÍA'], // Para futuras carreras
+            ['codigo_categoria'=>'CAT-TEC', 'nombre_categoria'=>'TECNICATURAS SUPERIORES'],
+            ['codigo_categoria'=>'CAT-PROF', 'nombre_categoria'=>'PROFESORADOS'],
+            ['codigo_categoria'=>'CAT-EDUC', 'nombre_categoria'=>'EDUCACIÓN'], // Para futuras carreras
+            ['codigo_categoria'=>'CAT-SALUD', 'nombre_categoria'=>'SALUD'], // Para futuras carreras
+            ['codigo_categoria'=>'CAT-TECNO', 'nombre_categoria'=>'TECNOLOGÍA'], // Para futuras carreras
         ];
 
         // Ejecuta un comando TRUNCATE en la tabla 'Categoria'.

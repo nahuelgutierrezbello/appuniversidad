@@ -65,17 +65,17 @@ class Estudiantes extends BaseController
         // Recoge los datos del formulario usando el objeto 'request'.
         $data = [
             'dni'        => $this->request->getPost('dni'),
-            'nombre_estudiante'       => $this->request->getPost('nombre_estudiante'),
+            'nombre_estudiante'       => $this->request->getPost('nest'),
             'edad'       => $this->request->getPost('edad'),
             'email'      => $this->request->getPost('email'),
-            'fecha_nacimiento'  => $this->request->getPost('fecha_nacimiento') ?: null,
-            'carrera_id'     => $this->request->getPost('carrera_id') ?: null,
+            'fecha_nacimiento'  => $this->request->getPost('fecha_nac') ?: null,
+            'carrera_id'     => $this->request->getPost('id_car') ?: null,
         ];
 
         // Intenta guardar los datos. El modelo se encarga de la validación.
         if ($estudianteModel->save($data) === false) {
             // Si la validación falla, redirige hacia atrás con los errores.
-            return redirect()->to('/estudiantes')->withInput()->with('errors', 'Error al registrar: ' . implode(', ', $estudianteModel->errors()));
+            return redirect()->to('/estudiantes')->withInput()->with('errors', $estudianteModel->errors());
         }
 
         // Si el guardado es exitoso, redirige a la lista de estudiantes con un mensaje de éxito.
@@ -99,6 +99,10 @@ class Estudiantes extends BaseController
         // Verifica si la petición es de tipo AJAX.
         if ($this->request->isAJAX()) {
             if ($estudiante) {
+                // Map model field names to form field names for the modal
+                $estudiante['nest'] = $estudiante['nombre_estudiante'];
+                $estudiante['fecha_nac'] = $estudiante['fecha_nacimiento'];
+                $estudiante['id_car'] = $estudiante['carrera_id'];
                 // Si se encuentra el estudiante, devuelve sus datos como una respuesta JSON.
                 return $this->response->setJSON($estudiante);
             } else {
@@ -128,10 +132,14 @@ class Estudiantes extends BaseController
         $data = $this->request->getPost();
         // Añade el ID a los datos para que la regla de validación 'is_unique' pueda ignorar el registro actual.
         $data['id'] = $id;
+        // Map the form field names to model field names
+        $data['nombre_estudiante'] = $data['nest'];
+        $data['fecha_nacimiento'] = $data['fecha_nac'];
+        $data['carrera_id'] = $data['id_car'];
 
         // Intenta actualizar los datos. El modelo se encarga de la validación.
         if ($estudianteModel->update($id, $data) === false) {
-            return redirect()->to('/estudiantes')->withInput()->with('errors', 'Error al actualizar: ' . implode(', ', $estudianteModel->errors()));
+            return redirect()->to('/estudiantes')->withInput()->with('errors', $estudianteModel->errors());
         }
 
         // Si la actualización es exitosa, redirige con un mensaje de éxito.
@@ -219,25 +227,50 @@ class Estudiantes extends BaseController
      */
     public function dashboard()
     {
-        // Por ahora, usar estudiante con ID 1. En el futuro, usar sesión.
-        $id_est = 1;
+        // ==================================================================
+        // MODIFICACIÓN TEMPORAL PARA DESARROLLO
+        // ==================================================================
+        // Para poder diseñar la plantilla sin un sistema de login,
+        // vamos a usar un ID de estudiante fijo (ej: 1).
+        // Cuando implementes el login, solo tienes que borrar esta línea
+        // y descomentar el bloque que obtiene el ID de la sesión.
+        
+        $id_est = 1; // <-- ¡Aquí está la magia! Usamos el estudiante con ID 1.
+
+        // if (! $id_est = session()->get('id')) {
+        //     return redirect()->to('/login')->with('error', 'Debe iniciar sesión para ver su dashboard.');
+        // }
 
         $estudianteModel = new EstudianteModel();
         $materiaModel = new MateriaModel();
 
         $data['estudiante'] = $estudianteModel->getEstudianteConCarrera($id_est);
-        // Removido el redirect para mostrar el dashboard incluso si no hay estudiante
-        $data['notas'] = $estudianteModel->getNotas($id_est);
-        $data['materias_inscritas'] = $estudianteModel->getMateriasInscritas($id_est);
-        $data['estadisticas'] = $estudianteModel->getEstadisticas($id_est);
+        // Obtenemos los datos una sola vez
+        $notas = $estudianteModel->getNotas($id_est);
+        $materias_inscritas = $estudianteModel->getMateriasInscritas($id_est);
 
-        // Materiales por materia (para el accordion)
-        $materiales_por_materia = [];
+        $data['notas'] = $notas;
+        $data['materias_inscritas'] = $materias_inscritas;
+        // Pasamos los datos al método para evitar consultas duplicadas
+        $data['estadisticas'] = $estudianteModel->getEstadisticas($notas, $materias_inscritas);
+ 
+        // Preparamos arrays para los datos adicionales.
+        $data['materiales_por_materia'] = [];
+        $data['asistencias_por_materia'] = [];
+
+        // Por cada materia en la que está inscripto, obtenemos sus datos.
         foreach ($data['materias_inscritas'] as $inscripcion) {
-            $materiales_por_materia[$inscripcion['materia_id']] = $materiaModel->getMateriales($inscripcion['materia_id']);
+            $materia_id = $inscripcion['materia_id'];
+            // ==================================================================
+            // LÍNEA TEMPORALMENTE DESACTIVADA
+            // Se comenta para evitar el error "Table 'material' doesn't exist".
+            // Cuando crees la tabla 'material', puedes descomentar esta línea.
+            // $data['materiales_por_materia'][$materia_id] = $materiaModel->getMateriales($materia_id);
+            // Obtenemos las asistencias individuales.
+            $asistencias_individuales = $estudianteModel->getAsistenciasIndividuales($inscripcion['id']);
+            $data['asistencias_por_materia'][$materia_id] = $asistencias_individuales;
         }
-        $data['materiales_por_materia'] = $materiales_por_materia;
 
-        return view('dashboard_estudiante', $data);
+        return view('Dashboard_Estudiantes/dashboard_estudiante', $data);
     }
 }

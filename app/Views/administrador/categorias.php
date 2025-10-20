@@ -45,11 +45,11 @@
                         <input type="hidden" id="categoryId">
                         <div class="mb-3">
                             <label for="categoryName" class="form-label">Nombre de la Categoría</label>
-                            <input type="text" class="form-control" id="categoryName" name="ncat" required>
+                            <input type="text" class="form-control" id="categoryName" name="nombre_categoria" required>
                         </div>
                          <div class="mb-3">
                             <label for="categoryCode" class="form-label">Código de Categoría</label>
-                            <input type="text" class="form-control" id="categoryCode" name="codcat" required>
+                            <input type="text" class="form-control" id="categoryCode" name="codigo_categoria" required>
                         </div>
                         <div class="text-end">
                             <button type="submit" class="btn btn-success">
@@ -116,13 +116,13 @@
                                 <?php if(isset($categorias) && count($categorias) > 0): ?>
                                     <?php foreach($categorias as $cat): ?>
                                         <tr>
-                                            <td class="text-center"><?= esc($cat['id_cat']) ?></td>
-                                            <td class="text-center"><?= esc($cat['ncat']) ?></td>
+                                            <td class="text-center"><?= esc($cat['id']) ?></td>
+                                            <td class="text-center"><?= esc($cat['nombre_categoria']) ?></td>
                                             <td class="text-center">
-                                                <button class="btn btn-info btn-sm edit-cat-btn" data-id="<?= esc($cat['id_cat']) ?>" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                                                <button class="btn btn-info btn-sm edit-cat-btn" data-id="<?= esc($cat['id']) ?>" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
                                                     <i class="fas fa-pencil-alt"></i>
                                                 </button>
-                                                <form action="<?= base_url('categorias/delete/' . $cat['id_cat']) ?>" method="post" class="d-inline delete-form">
+                                                <form action="<?= base_url('categorias/delete/' . $cat['id']) ?>" method="post" class="d-inline delete-form">
                                                     <?= csrf_field() ?>
                                                     <button type="submit" class="btn btn-danger btn-sm" title="Eliminar">
                                                         <i class="fas fa-trash-alt"></i>
@@ -154,14 +154,14 @@
             <form id="editCategoryForm" method="post">
                 <?= csrf_field() ?>
                 <div class="modal-body">
-                    <input type="hidden" name="id_cat" id="edit_id_cat">
+                    <input type="hidden" name="id" id="edit_id">
                     <div class="mb-3">
-                        <label for="edit_ncat" class="form-label">Nombre de la Categoría</label>
-                        <input type="text" class="form-control" id="edit_ncat" name="ncat" required>
+                        <label for="edit_nombre_categoria" class="form-label">Nombre de la Categoría</label>
+                        <input type="text" class="form-control" id="edit_nombre_categoria" name="nombre_categoria" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_codcat" class="form-label">Código de Categoría</label>
-                        <input type="text" class="form-control" id="edit_codcat" name="codcat" required>
+                        <label for="edit_codigo_categoria" class="form-label">Código de Categoría</label>
+                        <input type="text" class="form-control" id="edit_codigo_categoria" name="codigo_categoria" required>
                     </div>
                 </div>
                 <div class="modal-footer">

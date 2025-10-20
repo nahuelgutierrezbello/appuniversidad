@@ -64,12 +64,12 @@ class RegistrarCarrera extends BaseController
 
         // Recoge los datos del formulario.
         $data = [
-            'ncar' => $nombreCarrera,
+            'nombre_carrera' => $nombreCarrera,
             // Llama al método privado para generar un código único (ej: "DS-1").
-            'codcar' => $this->generarCodigoCarrera($nombreCarrera),
-            'id_cat' => $this->request->getPost('id_cat'),
+            'codigo_carrera' => $this->generarCodigoCarrera($nombreCarrera),
+            'categoria_id' => $this->request->getPost('id_cat'),
             'duracion' => $this->request->getPost('duracion'),
-            'id_mod' => $this->request->getPost('id_mod'),
+            'modalidad_id' => $this->request->getPost('id_mod'),
         ];
 
         // Intenta guardar los datos. El modelo se encarga de la validación.
@@ -123,10 +123,10 @@ class RegistrarCarrera extends BaseController
         // Esto previene ataques de "Mass Assignment" donde un usuario podría intentar
         // modificar campos no deseados (como 'codcar').
         $data = [
-            'ncar' => $this->request->getPost('ncar'),
-            'id_cat' => $this->request->getPost('id_cat'),
+            'nombre_carrera' => $this->request->getPost('ncar'),
+            'categoria_id' => $this->request->getPost('id_cat'),
             'duracion' => $this->request->getPost('duracion'),
-            'id_mod' => $this->request->getPost('id_mod'),
+            'modalidad_id' => $this->request->getPost('id_mod'),
         ];
 
         // Intenta actualizar los datos. El modelo se encarga de la validación.
@@ -210,7 +210,7 @@ class RegistrarCarrera extends BaseController
 
         // Paso 2: Buscar en la base de datos cuántas carreras ya existen con ese mismo acrónimo.
         // Por ejemplo, si el acrónimo es "DS", busca códigos como "DS-1", "DS-2", etc.
-        $existentes = $model->like('codcar', $acronimo . '-', 'after')->countAllResults();
+        $existentes = $model->like('codigo_carrera', $acronimo . '-', 'after')->countAllResults();
 
         // Paso 3: Devolver el nuevo código con el número secuencial siguiente.
         $siguienteNumero = $existentes + 1;

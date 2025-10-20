@@ -18,6 +18,11 @@ class ProfesorSeeder extends Seeder
         // Crea una instancia del Query Builder apuntando a la tabla 'Profesor'.
         $builder = $this->db->table('Profesor');
 
+        // Define un array con los datos de los profesores de ejemplo.
+        $profesores = [
+            ['legajo' => 1001, 'nombre_profesor' => 'María García', 'carrera_id' => 1],
+            ['legajo' => 1002, 'nombre_profesor' => 'Carlos López', 'carrera_id' => 2],
+        ];
 
         // Vacía la tabla 'Profesor' para evitar duplicados.
         $builder->truncate();

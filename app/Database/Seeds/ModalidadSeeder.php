@@ -22,9 +22,10 @@ class ModalidadSeeder extends Seeder
         // Define un array con los datos de las modalidades que se van a insertar.
         // Cada elemento del array es una fila de la tabla.
         $modalidades = [
-            ['codmod'=>'MOD-PRES', 'nmod'=>'PRESENCIAL'],
-            ['codmod'=>'MOD-VIRT', 'nmod'=>'VIRTUAL'],
-            ['codmod'=>'MOD-HIBR', 'nmod'=>'HÍBRIDA'],
+            ['codigo_modalidad'=>'MOD-PRES', 'nombre_modalidad'=>'PRESENCIAL'],
+            ['codigo_modalidad'=>'MOD-SEMI', 'nombre_modalidad'=>'SEMIPRESENCIAL'],
+            ['codigo_modalidad'=>'MOD-VIRT', 'nombre_modalidad'=>'VIRTUAL'],
+            ['codigo_modalidad'=>'MOD-LIB', 'nombre_modalidad'=>'LIBRE'],
         ];
 
         // Ejecuta un comando TRUNCATE en la tabla 'Modalidad'.

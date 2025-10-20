@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tabla de Asistencias</title>
-    <!-- SweetAlert2 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
         :root {
             --primary-color: #3498db;
@@ -391,8 +389,6 @@
         </div>
     </div>
 
-    <!-- SweetAlert2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Elementos del DOM
@@ -693,46 +689,16 @@
                 `;
             }
             
-            // Guardar asistencias con SweetAlert
-            async function saveAttendances() {
-                const result = await Swal.fire({
-                    title: '¿Guardar asistencias?',
-                    text: '¿Está seguro que desea guardar todas las asistencias?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sí, guardar',
-                    cancelButtonText: 'Cancelar',
-                    confirmButtonColor: '#2ecc71',
-                    cancelButtonColor: '#e74c3c'
-                });
-                
-                if (result.isConfirmed) {
-                    // En una aplicación real, aquí enviaríamos los datos al servidor
-                    console.log('Asistencias guardadas:', attendanceState);
-                    
-                    await Swal.fire({
-                        title: '¡Guardado!',
-                        text: 'Las asistencias se han guardado correctamente.',
-                        icon: 'success',
-                        confirmButtonColor: '#2ecc71'
-                    });
-                }
+            // Guardar asistencias (simulación)
+            function saveAttendances() {
+                // En una aplicación real, aquí enviaríamos los datos al servidor
+                console.log('Asistencias guardadas:', attendanceState);
+                alert('Asistencias guardadas correctamente');
             }
             
-            // Restablecer asistencias con SweetAlert
-            async function resetAttendances() {
-                const result = await Swal.fire({
-                    title: '¿Restablecer asistencias?',
-                    text: '¿Está seguro que desea restablecer todas las asistencias? Se perderán todos los cambios.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sí, restablecer',
-                    cancelButtonText: 'Cancelar',
-                    confirmButtonColor: '#e74c3c',
-                    cancelButtonColor: '#3498db'
-                });
-                
-                if (result.isConfirmed) {
+            // Restablecer todas las asistencias del mes actual
+            function resetAttendances() {
+                if (confirm('¿Está seguro de que desea restablecer todas las asistencias de este mes?')) {
                     const month = parseInt(monthSelect.value);
                     const year = parseInt(yearSelect.value);
                     const daysInMonth = getDaysInMonth(month, year);
@@ -747,96 +713,47 @@
                     
                     // Regenerar la tabla
                     generateAttendanceTable();
-                    
-                    await Swal.fire({
-                        title: '¡Restablecido!',
-                        text: 'Todas las asistencias han sido restablecidas.',
-                        icon: 'success',
-                        confirmButtonColor: '#2ecc71'
-                    });
                 }
             }
             
-            // Marcar todos como presentes con SweetAlert
-            async function markAllPresent() {
-                const result = await Swal.fire({
-                    title: '¿Marcar todos como presentes?',
-                    text: '¿Está seguro que desea marcar a todos los alumnos como presentes en todos los días?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sí, marcar todos',
-                    cancelButtonText: 'Cancelar',
-                    confirmButtonColor: '#2ecc71',
-                    cancelButtonColor: '#e74c3c'
+            // Marcar todos como presentes en el mes actual
+            function markAllPresent() {
+                const month = parseInt(monthSelect.value);
+                const year = parseInt(yearSelect.value);
+                const daysInMonth = getDaysInMonth(month, year);
+                
+                students.forEach(student => {
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        saveAttendance(student.id, day, month, year, true);
+                    }
                 });
                 
-                if (result.isConfirmed) {
-                    const month = parseInt(monthSelect.value);
-                    const year = parseInt(yearSelect.value);
-                    const daysInMonth = getDaysInMonth(month, year);
-                    
-                    students.forEach(student => {
-                        for (let day = 1; day <= daysInMonth; day++) {
-                            saveAttendance(student.id, day, month, year, true);
-                        }
-                    });
-                    
-                    // Regenerar la tabla
-                    generateAttendanceTable();
-                    
-                    await Swal.fire({
-                        title: '¡Completado!',
-                        text: 'Todos los alumnos han sido marcados como presentes.',
-                        icon: 'success',
-                        confirmButtonColor: '#2ecc71'
-                    });
-                }
+                // Regenerar la tabla
+                generateAttendanceTable();
             }
             
-            // Marcar todos como ausentes con SweetAlert
-            async function markAllAbsent() {
-                const result = await Swal.fire({
-                    title: '¿Marcar todos como ausentes?',
-                    text: '¿Está seguro que desea marcar a todos los alumnos como ausentes en todos los días?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sí, marcar todos',
-                    cancelButtonText: 'Cancelar',
-                    confirmButtonColor: '#e74c3c',
-                    cancelButtonColor: '#3498db'
+            // Marcar todos como ausentes en el mes actual
+            function markAllAbsent() {
+                const month = parseInt(monthSelect.value);
+                const year = parseInt(yearSelect.value);
+                const daysInMonth = getDaysInMonth(month, year);
+                
+                students.forEach(student => {
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        saveAttendance(student.id, day, month, year, false);
+                    }
                 });
                 
-                if (result.isConfirmed) {
-                    const month = parseInt(monthSelect.value);
-                    const year = parseInt(yearSelect.value);
-                    const daysInMonth = getDaysInMonth(month, year);
-                    
-                    students.forEach(student => {
-                        for (let day = 1; day <= daysInMonth; day++) {
-                            saveAttendance(student.id, day, month, year, false);
-                        }
-                    });
-                    
-                    // Regenerar la tabla
-                    generateAttendanceTable();
-                    
-                    await Swal.fire({
-                        title: '¡Completado!',
-                        text: 'Todos los alumnos han sido marcados como ausentes.',
-                        icon: 'success',
-                        confirmButtonColor: '#2ecc71'
-                    });
-                }
+                // Regenerar la tabla
+                generateAttendanceTable();
             }
             
-            // Event listeners para los 4 botones con SweetAlert
+            // Event listeners
+            generateBtn.addEventListener('click', generateAttendanceTable);
             saveBtn.addEventListener('click', saveAttendances);
             resetBtn.addEventListener('click', resetAttendances);
             markAllPresentBtn.addEventListener('click', markAllPresent);
             markAllAbsentBtn.addEventListener('click', markAllAbsent);
-            
-            // Event listener para mostrar tabla (sin SweetAlert)
-            generateBtn.addEventListener('click', generateAttendanceTable);
             
             // Inicializar la aplicación
             initializeYearSelect();

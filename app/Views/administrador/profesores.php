@@ -145,6 +145,7 @@
                                        <th>ID</th>
                                             <th>Nombre</th>
                                             <th>Legajo</th>
+                                            <th>Carrera</th>
                                            <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -155,6 +156,7 @@
                                                 <td><?= esc($prof['id']) ?></td>
                                                 <td><?= esc($prof['nombre_profesor']) ?></td>
                                                 <td><?= esc($prof['legajo']) ?></td>
+                                                <td><?= esc($prof['nombre_carrera'] ?? 'No asignada') ?></td>
                                                 <td>
                                                     <button class="btn btn-info btn-sm edit-btn" data-id="<?= esc($prof['id']) ?>" data-bs-toggle="modal" data-bs-target="#editProfModal">
                                                         <i class="fas fa-pencil-alt"></i>
@@ -169,7 +171,7 @@
                                             </tr>
                                         <?php endforeach; ?>
                                     <?php else: ?>
-                                        <tr><td colspan="4" class="text-center">No hay profesores registrados.</td></tr>
+                                        <tr><td colspan="5" class="text-center">No hay profesores registrados.</td></tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
