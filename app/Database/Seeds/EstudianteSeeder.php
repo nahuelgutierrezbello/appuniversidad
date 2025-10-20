@@ -19,10 +19,10 @@ class EstudianteSeeder extends Seeder
         $builder = $this->db->table('Estudiante');
 
         // Define un array con los datos de los estudiantes de ejemplo.
-        // El campo 'id_car' es una clave foránea que se corresponde con el ID de una carrera.
+        // El campo 'carrera_id' es una clave foránea que se corresponde con el ID de una carrera.
         $estudiantes = [
-            ['dni' => '12345678', 'nest' => 'Juan Pérez', 'fecha_nac' => '2000-05-10', 'edad' => '24', 'email' => 'juan@email.com', 'id_car' => 1], // Inscrito en Desarrollo de Software
-            ['dni' => '23456789', 'nest' => 'Lucía Fernández', 'fecha_nac' => '2001-08-22', 'edad' => '23', 'email' => 'lucia@email.com', 'id_car' => 2], // Inscrita en Profesorado de Inglés
+            ['dni' => '12345678', 'nombre_estudiante' => 'Juan Pérez', 'fecha_nacimiento' => '2000-05-10', 'edad' => '24', 'email' => 'juan@email.com', 'carrera_id' => 1], // Inscrito en Desarrollo de Software
+            ['dni' => '23456789', 'nombre_estudiante' => 'Lucía Fernández', 'fecha_nacimiento' => '2001-08-22', 'edad' => '23', 'email' => 'lucia@email.com', 'carrera_id' => 2], // Inscrita en Profesorado de Inglés
         ];
 
         // Vacía la tabla 'Estudiante' para evitar duplicados.

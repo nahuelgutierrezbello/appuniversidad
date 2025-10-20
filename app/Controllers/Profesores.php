@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 // Importa los modelos que este controlador necesita para funcionar.
 use App\Models\ProfesorModel;
+use App\Models\CarreraModel;
 
 /**
  * Este es el "director de orquesta" para todo lo relacionado con los profesores.
@@ -25,14 +26,20 @@ class Profesores extends BaseController
     {
         // Para evitar error de conexión a base de datos, mostramos la vista con datos vacíos si no hay conexión.
         try {
+            // Instancia los modelos necesarios.
             $profesorModel = new ProfesorModel();
+            $carreraModel = new CarreraModel();
+
+            // Prepara un array '$data' para pasar información a la vista.
             $data['profesores'] = $profesorModel->getProfesores();
-            $data['carreras'] = $this->db->table('Carrera')->get()->getResultArray();
+            $data['carreras'] = $carreraModel->findAll();
         } catch (\Exception $e) {
             // Si hay error, mostramos la vista con datos vacíos.
             $data['profesores'] = [];
             $data['carreras'] = [];
         }
+
+        // Carga la vista 'profesores.php' y le pasa el array '$data'.
         return view('administrador/profesores', $data);
     }
 
@@ -213,13 +220,621 @@ class Profesores extends BaseController
         // Por ahora, usar profesor con ID 1. En el futuro, usar sesión.
         $id_prof = 1;
 
+        // Instanciamos los modelos necesarios
         $profesorModel = new ProfesorModel();
+        $notaModel = new \App\Models\NotaModel();
+
+        // Obtenemos los datos del profesor
+        $data['profesor'] = $profesorModel->getProfesorConCarrera($id_prof);
+
+        // Obtenemos todas las materias que dicta el profesor
+        $todas_las_materias = $profesorModel->getMateriasDictadas($id_prof);
+
+        // Agrupamos las materias por carrera
+        $materias_por_carrera = [];
+        foreach ($todas_las_materias as $materia) {
+            $carrera_id = $materia['carrera_id'];
+            if (!isset($materias_por_carrera[$carrera_id])) {
+                $materias_por_carrera[$carrera_id] = [
+                    'nombre_carrera' => $materia['nombre_carrera'],
+                    'materias' => []
+                ];
+            }
+            $materias_por_carrera[$carrera_id]['materias'][] = $materia;
+        }
+
+        // Preparamos los arrays para organizar los datos por materia
+        $estudiantes_por_materia = [];
+        $notas_por_materia = [];
+        $asistencias_por_materia = [];
+
+        // Iteramos sobre cada materia para obtener sus datos asociados
+        foreach ($todas_las_materias as $materia) {
+            $materia_id = $materia['id'];
+            $estudiantes_por_materia[$materia_id] = $profesorModel->getEstudiantesPorMateriaEspecifica($materia_id);
+            $notas_por_materia[$materia_id] = $notaModel->getNotasPorMateria($materia_id);
+            $asistencias_por_materia[$materia_id] = $profesorModel->getDetalleAsistenciaPorMateria($materia_id);
+        }
+
+        // Pasamos todos los datos organizados a la vista
+        $data['materias'] = $todas_las_materias;
+        $data['estudiantes_por_materia'] = $estudiantes_por_materia;
+        $data['notas_por_materia'] = $notas_por_materia;
+        $data['asistencias_por_materia'] = $asistencias_por_materia;
+
+        return view('Dashboard_Profesores/dashboard_profesor', $data);
+    }
+
+    /**
+     * Método: carreras()
+     * Propósito: Muestra la lista de carreras asignadas al profesor.
+     * @return string La vista renderizada.
+     */
+    public function carreras()
+    {
+        // Por ahora, usar profesor con ID 1. En el futuro, usar sesión.
+        $id_prof = 1;
+
+        // Instanciamos los modelos necesarios
+        $profesorModel = new ProfesorModel();
+        $notaModel = new \App\Models\NotaModel();
+
+        // Obtenemos los datos del profesor
+        $data['profesor'] = $profesorModel->getProfesorConCarrera($id_prof);
+
+        // Obtenemos todas las materias que dicta el profesor
+        $todas_las_materias = $profesorModel->getMateriasDictadas($id_prof);
+        
+        // Preparamos los arrays para organizar los datos por materia
+        $estudiantes_por_materia = [];
+        $notas_por_materia = [];
+        $asistencias_por_materia = [];
+
+        // Iteramos sobre cada materia para obtener sus datos asociados
+        foreach ($todas_las_materias as $materia) {
+            $materia_id = $materia['id'];
+            $estudiantes_por_materia[$materia_id] = $profesorModel->getEstudiantesPorMateriaEspecifica($materia_id);
+            $notas_por_materia[$materia_id] = $notaModel->getNotasPorMateria($materia_id);
+            $asistencias_por_materia[$materia_id] = $profesorModel->getDetalleAsistenciaPorMateria($materia_id);
+        }
+
+        // Pasamos todos los datos organizados a la vista
+        $data['materias'] = $todas_las_materias;
+        $data['estudiantes_por_materia'] = $estudiantes_por_materia;
+        $data['notas_por_materia'] = $notas_por_materia;
+        $data['asistencias_por_materia'] = $asistencias_por_materia;
+
+        return view('Dashboard_Profesores/carreras', $data);
+    }
+
+    /**
+     * Método: carrera($carrera_id)
+     * Propósito: Muestra los detalles de una carrera específica, incluyendo estudiantes inscritos.
+     * @param int $carrera_id El ID de la carrera.
+     * @return string La vista renderizada.
+     */
+    public function carrera($carrera_id)
+    {
+        // Por ahora, usar profesor con ID 1. En el futuro, usar sesión.
+        $id_prof = 1;
+
+        $profesorModel = new ProfesorModel();
+        $carreraModel = new CarreraModel();
 
         $data['profesor'] = $profesorModel->getProfesorConCarrera($id_prof);
-        $data['materias_dictadas'] = $profesorModel->getMateriasDictadas($id_prof);
-        $data['estadisticas'] = $profesorModel->getEstadisticas($id_prof);
-        $data['estudiantes_por_materia'] = $profesorModel->getEstudiantesPorMateria($id_prof);
+        $data['carrera'] = $carreraModel->find($carrera_id);
+        $data['estudiantes'] = $profesorModel->getEstudiantesPorCarrera($carrera_id, $id_prof);
 
-        return view('dashboard_profesores', $data);
+        return view('Dashboard_Profesores/carrera_detalle', $data);
+    }
+
+    /**
+     * Método: guardarNotas()
+     * Propósito: Guarda las notas de los estudiantes para una materia específica.
+     * @return \CodeIgniter\HTTP\RedirectResponse
+     */
+    public function guardarNotas()
+    {
+        $materiaId = $this->request->getPost('materia_id');
+        $notas = $this->request->getPost('nota');
+        $fechas = $this->request->getPost('fecha_evaluacion');
+        $observaciones = $this->request->getPost('observaciones');
+
+        if (!$materiaId || !$notas) {
+            return redirect()->back()->with('error', 'Datos incompletos para guardar notas.');
+        }
+
+        $notaModel = new \App\Models\NotaModel();
+
+        foreach ($notas as $estudianteId => $calificacion) {
+            if (!empty($calificacion)) {
+                $data = [
+                    'estudiante_id' => $estudianteId,
+                    'materia_id' => $materiaId,
+                    'calificacion' => $calificacion,
+                    'fecha_evaluacion' => $fechas[$estudianteId] ?? date('Y-m-d'),
+                    'observaciones' => $observaciones[$estudianteId] ?? ''
+                ];
+
+                // Buscar si ya existe una nota para este estudiante y materia
+                $existing = $notaModel->where('estudiante_id', $estudianteId)
+                                     ->where('materia_id', $materiaId)
+                                     ->first();
+
+                if ($existing) {
+                    $notaModel->update($existing['id'], $data);
+                } else {
+                    $notaModel->insert($data);
+                }
+            }
+        }
+
+        return redirect()->back()->with('success', 'Notas guardadas correctamente.');
+    }
+
+    /**
+     * Método: getEstudiantesMateria($materia_id)
+     * Propósito: Devuelve los estudiantes de una materia en formato JSON para AJAX.
+     * @param int $materia_id El ID de la materia.
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function getEstudiantesMateria($materia_id)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => 'Acceso no autorizado']);
+        }
+
+        $profesorModel = new ProfesorModel();
+        $estudiantes = $profesorModel->getEstudiantesPorMateriaEspecifica($materia_id);
+
+        return $this->response->setJSON($estudiantes);
+    }
+
+    /**
+     * Método: guardarAsistencia()
+     * Propósito: Guarda la asistencia de los estudiantes para una fecha específica.
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function guardarAsistencia()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => 'Acceso no autorizado']);
+        }
+
+        $data = $this->request->getJSON(true);
+        $materiaId = $data['materia_id'];
+        $fecha = $data['fecha'];
+        $asistencias = $data['asistencias'];
+
+        if (!$materiaId || !$fecha || !$asistencias) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Datos incompletos']);
+        }
+
+        $asistenciaModel = new \App\Models\AsistenciaModel();
+
+        foreach ($asistencias as $asistencia) {
+            $dataAsistencia = [
+                'estudiante_id' => $asistencia['estudiante_id'],
+                'materia_id' => $materiaId,
+                'fecha' => $fecha,
+                'estado' => $asistencia['estado']
+            ];
+
+            // Buscar si ya existe asistencia para este estudiante, materia y fecha
+            $existing = $asistenciaModel->where('estudiante_id', $asistencia['estudiante_id'])
+                                       ->where('materia_id', $materiaId)
+                                       ->where('fecha', $fecha)
+                                       ->first();
+
+            if ($existing) {
+                $asistenciaModel->update($existing['id'], $dataAsistencia);
+            } else {
+                $asistenciaModel->insert($dataAsistencia);
+            }
+        }
+
+        return $this->response->setJSON(['success' => true, 'message' => 'Asistencia guardada correctamente']);
+    }
+
+    /**
+     * Método: getAsistenciaMateria($materia_id)
+     * Propósito: Devuelve la asistencia de una materia en un rango de fechas para el calendario.
+     * @param int $materia_id El ID de la materia.
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function getAsistenciaMateria($materia_id)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => 'Acceso no autorizado']);
+        }
+
+        $start = $this->request->getGet('start');
+        $end = $this->request->getGet('end');
+
+        $asistenciaModel = new \App\Models\AsistenciaModel();
+        $asistencias = $asistenciaModel->where('materia_id', $materia_id)
+                                      ->where('fecha >=', $start)
+                                      ->where('fecha <=', $end)
+                                      ->findAll();
+
+        return $this->response->setJSON($asistencias);
+    }
+
+    /**
+     * Método: controlAsistencias($materia_id)
+     * Propósito: Muestra el control de asistencias mensual para una materia específica.
+     * @param int $materia_id El ID de la materia.
+     * @return string La vista renderizada.
+     */
+    public function controlAsistencias($materia_id)
+    {
+        // Por ahora, usar profesor con ID 1. En el futuro, usar sesión.
+        $id_prof = 1;
+
+        $profesorModel = new ProfesorModel();
+        $materiaModel = new \App\Models\MateriaModel();
+
+        $data['profesor'] = $profesorModel->getProfesorConCarrera($id_prof);
+        $data['materia'] = $materiaModel->find($materia_id);
+
+        return view('Dashboard_Profesores/control_asistencias', $data);
+    }
+
+    /**
+     * Método: asistenciaMensual($materia_id)
+     * Propósito: Redirige a la nueva vista de control de asistencias.
+     * @param int $materia_id El ID de la materia.
+     * @return \CodeIgniter\HTTP\RedirectResponse
+     */
+    public function asistenciaMensual($materia_id)
+    {
+        return redirect()->to(base_url('profesores/control-asistencias/' . $materia_id));
+    }
+
+    /**
+     * Método: getEventosAsistencia($materia_id)
+     * Propósito: Devuelve los eventos de asistencia para el calendario FullCalendar.
+     * @param int $materia_id El ID de la materia.
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function getEventosAsistencia($materia_id)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => 'Acceso no autorizado']);
+        }
+
+        $start = $this->request->getGet('start');
+        $end = $this->request->getGet('end');
+
+        $asistenciaModel = new \App\Models\AsistenciaModel();
+        $asistencias = $asistenciaModel->getAsistenciaPorFecha($materia_id, $start, $end);
+
+        $eventos = [];
+        foreach ($asistencias as $asistencia) {
+            $eventos[] = [
+                'title' => $asistencia['presentes'] . 'P / ' . $asistencia['ausentes'] . 'A',
+                'start' => $asistencia['fecha'],
+                'backgroundColor' => $asistencia['ausentes'] > 0 ? '#dc3545' : '#28a745',
+                'borderColor' => $asistencia['ausentes'] > 0 ? '#dc3545' : '#28a745',
+                'extendedProps' => [
+                    'presentes' => $asistencia['presentes'],
+                    'ausentes' => $asistencia['ausentes'],
+                    'justificados' => $asistencia['justificados']
+                ]
+            ];
+        }
+
+        return $this->response->setJSON($eventos);
+    }
+
+    /**
+     * Método: getEstadisticasMes($materia_id)
+     * Propósito: Devuelve las estadísticas del mes actual para una materia.
+     * @param int $materia_id El ID de la materia.
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function getEstadisticasMes($materia_id)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => 'Acceso no autorizado']);
+        }
+
+        $asistenciaModel = new \App\Models\AsistenciaModel();
+        $estadisticas = $asistenciaModel->getEstadisticasMes($materia_id);
+
+        return $this->response->setJSON($estadisticas);
+    }
+
+    /**
+     * Método: getResumenEstudiantes($materia_id)
+     * Propósito: Devuelve el resumen de asistencia por estudiante para una materia.
+     * @param int $materia_id El ID de la materia.
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function getResumenEstudiantes($materia_id)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => 'Acceso no autorizado']);
+        }
+
+        $asistenciaModel = new \App\Models\AsistenciaModel();
+        $resumen = $asistenciaModel->getResumenPorEstudiante($materia_id);
+
+        return $this->response->setJSON($resumen);
+    }
+
+    /**
+     * Método: getAsistenciasMensuales($materia_id, $mes, $anio)
+     * Propósito: Devuelve las asistencias mensuales para una materia específica.
+     * @param int $materia_id El ID de la materia.
+     * @param int $mes El mes (0-11).
+     * @param int $anio El año.
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function getAsistenciasMensuales($materia_id, $mes, $anio)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => 'Acceso no autorizado']);
+        }
+
+        $asistenciaModel = new \App\Models\AsistenciaModel();
+
+        // Calcular fechas del mes
+        $fechaInicio = date('Y-m-d', mktime(0, 0, 0, $mes + 1, 1, $anio));
+        $fechaFin = date('Y-m-t', mktime(0, 0, 0, $mes + 1, 1, $anio));
+
+        $asistencias = $asistenciaModel->where('materia_id', $materia_id)
+                                      ->where('fecha >=', $fechaInicio)
+                                      ->where('fecha <=', $fechaFin)
+                                      ->findAll();
+
+        return $this->response->setJSON($asistencias);
+    }
+
+    /**
+     * Método: guardarAsistenciasMensuales()
+     * Propósito: Guarda las asistencias mensuales para una materia específica.
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function guardarAsistenciasMensuales()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => 'Acceso no autorizado']);
+        }
+
+        $data = $this->request->getJSON(true);
+        $materiaId = $data['materia_id'];
+        $asistencias = $data['asistencias'];
+
+        if (!$materiaId || !$asistencias) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Datos incompletos']);
+        }
+
+        $asistenciaModel = new \App\Models\AsistenciaModel();
+
+        $resultado = $asistenciaModel->guardarAsistenciasMensuales($materiaId, $asistencias);
+
+        if ($resultado) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Asistencias guardadas correctamente']);
+        } else {
+            return $this->response->setJSON(['success' => false, 'message' => 'Error al guardar las asistencias']);
+        }
+    }
+
+    /**
+     * Método: getDatosAsistenciaMensual($materia_id, $mes, $anio)
+     * Propósito: Devuelve los datos necesarios para mostrar la tabla de asistencia mensual.
+     * @param int $materia_id El ID de la materia.
+     * @param int $mes El mes (1-12).
+     * @param int $anio El año.
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function getDatosAsistenciaMensual($materia_id, $mes, $anio)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => 'Acceso no autorizado']);
+        }
+
+        $asistenciaModel = new \App\Models\AsistenciaModel();
+
+        $estudiantes = $asistenciaModel->getEstudiantesConAsistencia($materia_id, $mes, $anio);
+        $estadisticas = $asistenciaModel->getEstadisticasMensuales($materia_id, $mes, $anio);
+
+        return $this->response->setJSON([
+            'estudiantes' => $estudiantes,
+            'estadisticas' => $estadisticas,
+            'dias_en_mes' => cal_days_in_month(CAL_GREGORIAN, $mes, $anio)
+        ]);
+    }
+
+    /**
+     * Método: marcarTodosPresentes($materia_id, $mes, $anio)
+     * Propósito: Marca a todos los estudiantes como presentes en todas las fechas del mes.
+     * @param int $materia_id El ID de la materia.
+     * @param int $mes El mes (1-12).
+     * @param int $anio El año.
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function marcarTodosPresentes($materia_id, $mes, $anio)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => 'Acceso no autorizado']);
+        }
+
+        $asistenciaModel = new \App\Models\AsistenciaModel();
+        $estudiantes = $asistenciaModel->getEstudiantesConAsistencia($materia_id, $mes, $anio);
+
+        $asistencias = [];
+        $diasEnMes = cal_days_in_month(CAL_GREGORIAN, $mes, $anio);
+
+        foreach ($estudiantes as $estudiante) {
+            for ($dia = 1; $dia <= $diasEnMes; $dia++) {
+                $fecha = sprintf('%04d-%02d-%02d', $anio, $mes, $dia);
+                $asistencias[] = [
+                    'estudiante_id' => $estudiante['id'],
+                    'fecha' => $fecha,
+                    'estado' => 'Presente'
+                ];
+            }
+        }
+
+        $resultado = $asistenciaModel->guardarAsistenciasMensuales($materia_id, $asistencias);
+
+        if ($resultado) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Todos marcados como presentes']);
+        } else {
+            return $this->response->setJSON(['success' => false, 'message' => 'Error al marcar todos como presentes']);
+        }
+    }
+
+    /**
+     * Método: marcarTodosAusentes($materia_id, $mes, $anio)
+     * Propósito: Marca a todos los estudiantes como ausentes en todas las fechas del mes.
+     * @param int $materia_id El ID de la materia.
+     * @param int $mes El mes (1-12).
+     * @param int $anio El año.
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function marcarTodosAusentes($materia_id, $mes, $anio)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => 'Acceso no autorizado']);
+        }
+
+        $asistenciaModel = new \App\Models\AsistenciaModel();
+        $estudiantes = $asistenciaModel->getEstudiantesConAsistencia($materia_id, $mes, $anio);
+
+        $asistencias = [];
+        $diasEnMes = cal_days_in_month(CAL_GREGORIAN, $mes, $anio);
+
+        foreach ($estudiantes as $estudiante) {
+            for ($dia = 1; $dia <= $diasEnMes; $dia++) {
+                $fecha = sprintf('%04d-%02d-%02d', $anio, $mes, $dia);
+                $asistencias[] = [
+                    'estudiante_id' => $estudiante['id'],
+                    'fecha' => $fecha,
+                    'estado' => 'Ausente'
+                ];
+            }
+        }
+
+        $resultado = $asistenciaModel->guardarAsistenciasMensuales($materia_id, $asistencias);
+
+        if ($resultado) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Todos marcados como ausentes']);
+        } else {
+            return $this->response->setJSON(['success' => false, 'message' => 'Error al marcar todos como ausentes']);
+        }
+    }
+
+    /**
+     * Método: resetearAsistencias($materia_id, $mes, $anio)
+     * Propósito: Elimina todas las asistencias del mes para una materia.
+     * @param int $materia_id El ID de la materia.
+     * @param int $mes El mes (1-12).
+     * @param int $anio El año.
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function resetearAsistencias($materia_id, $mes, $anio)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => 'Acceso no autorizado']);
+        }
+
+        $asistenciaModel = new \App\Models\AsistenciaModel();
+        $fechaInicio = sprintf('%04d-%02d-01', $anio, $mes);
+        $fechaFin = date('Y-m-t', strtotime($fechaInicio));
+
+        $resultado = $asistenciaModel->where('materia_id', $materia_id)
+                                   ->where('fecha >=', $fechaInicio)
+                                   ->where('fecha <=', $fechaFin)
+                                   ->delete();
+
+        if ($resultado) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Asistencias reseteadas correctamente']);
+        } else {
+            return $this->response->setJSON(['success' => false, 'message' => 'Error al resetear asistencias']);
+        }
+    }
+
+    /**
+     * Método: getTablaAsistenciaMensual($materia_id, $mes, $anio)
+     * Propósito: Devuelve la tabla HTML de asistencia mensual renderizada.
+     * @param int $materia_id El ID de la materia.
+     * @param int $mes El mes (1-12).
+     * @param int $anio El año.
+     * @return string HTML de la tabla.
+     */
+    public function getTablaAsistenciaMensual($materia_id, $mes = null, $anio = null)
+    {
+        // Usar mes y año actuales si no se especifican
+        if ($mes === null) $mes = date('n');
+        if ($anio === null) $anio = date('Y');
+
+        $asistenciaModel = new \App\Models\AsistenciaModel();
+
+        $estudiantes = $asistenciaModel->getEstudiantesConAsistencia($materia_id, $mes, $anio);
+        $estadisticas = $asistenciaModel->getEstadisticasMensuales($materia_id, $mes, $anio);
+        $diasEnMes = cal_days_in_month(CAL_GREGORIAN, $mes, $anio);
+
+        // Nombres de los días de la semana
+        $diasSemana = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+
+        // Generar HTML de la tabla
+        $html = '<table class="table table-striped table-hover attendance-table" id="attendance-table-' . $materia_id . '" data-materia-id="' . $materia_id . '">';
+        $html .= '<thead class="table-dark"><tr>';
+        $html .= '<th class="text-center">Estudiante</th>';
+
+        // Encabezados de días
+        for ($dia = 1; $dia <= $diasEnMes; $dia++) {
+            $fecha = mktime(0, 0, 0, $mes, $dia, $anio);
+            $diaSemana = $diasSemana[date('w', $fecha)];
+            $esFinDeSemana = (date('w', $fecha) == 0 || date('w', $fecha) == 6);
+            $claseFinSemana = $esFinDeSemana ? 'table-secondary' : '';
+            $html .= '<th class="text-center ' . $claseFinSemana . '" title="' . $diaSemana . '">' . $dia . '<br><small>' . $diaSemana . '</small></th>';
+        }
+
+        $html .= '<th class="text-center">%</th></tr></thead><tbody>';
+
+        // Filas de estudiantes
+        foreach ($estudiantes as $estudiante) {
+            $html .= '<tr>';
+            $html .= '<td class="fw-bold">' . esc($estudiante['nombre_estudiante'] . ' ' . $estudiante['apellido_estudiante']) . '</td>';
+
+            // Celdas de asistencia por día
+            for ($dia = 1; $dia <= $diasEnMes; $dia++) {
+                $fecha = sprintf('%04d-%02d-%02d', $anio, $mes, $dia);
+                $estado = isset($estudiante['asistencia'][$dia]) ? $estudiante['asistencia'][$dia] : '';
+                $checked = ($estado === 'Presente') ? 'checked' : '';
+                $fechaObj = mktime(0, 0, 0, $mes, $dia, $anio);
+                $esFinDeSemana = (date('w', $fechaObj) == 0 || date('w', $fechaObj) == 6);
+                $claseFinSemana = $esFinDeSemana ? 'table-light' : '';
+
+                $html .= '<td class="text-center ' . $claseFinSemana . '">';
+                $html .= '<div class="form-check form-check-inline">';
+                $html .= '<input class="form-check-input attendance-checkbox" type="checkbox" ';
+                $html .= 'data-materia-id="' . $materia_id . '" ';
+                $html .= 'data-estudiante="' . $estudiante['id'] . '" ';
+                $html .= 'data-fecha="' . $fecha . '" ' . $checked . '>';
+                $html .= '</div></td>';
+            }
+
+            // Calcular porcentaje
+            $diasPresentes = 0;
+            for ($dia = 1; $dia <= $diasEnMes; $dia++) {
+                if (isset($estudiante['asistencia'][$dia]) && $estudiante['asistencia'][$dia] === 'Presente') {
+                    $diasPresentes++;
+                }
+            }
+            $porcentaje = $diasEnMes > 0 ? round(($diasPresentes / $diasEnMes) * 100, 1) : 0;
+            $colorClass = $porcentaje >= 90 ? 'text-success' : ($porcentaje >= 70 ? 'text-warning' : 'text-danger');
+
+            $html .= '<td class="text-center fw-bold ' . $colorClass . '">' . $porcentaje . '%</td>';
+            $html .= '</tr>';
+        }
+
+        $html .= '</tbody></table>';
+
+        return $html;
     }
 }

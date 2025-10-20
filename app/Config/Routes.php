@@ -13,7 +13,6 @@ $routes->setTranslateURIDashes(false);
 $routes->set404Override();
 
 use CodeIgniter\Router\RouteCollection;
-
 /**
  * @var RouteCollection $routes
 
@@ -39,9 +38,13 @@ $routes->group('ajax', static function ($routes) {
 
 // --- RUTAS DE GESTIÓN (CRUDs) ---
 
-// --- ESTUDIANTES ---
+// --- RUTAS DE ACCESO A DASHBOARDS (para compatibilidad) ---
 $routes->get('acceso/estudiantes', 'Estudiantes::dashboard');
 $routes->get('acceso/profesores', 'Profesores::dashboard');
+
+// --- ESTUDIANTES ---
+$routes->get('estudiantes/dashboard', 'Estudiantes::dashboard'); // Dashboard del Estudiante
+$routes->get('profesores/dashboard', 'Profesores::dashboard');   // Dashboard del Profesor
 $routes->post('estudiantes/registrar', 'Estudiantes::registrar');
 $routes->get('estudiantes/edit/(:num)', 'Estudiantes::edit/$1');
 $routes->post('estudiantes/update/(:num)', 'Estudiantes::update/$1');
@@ -81,6 +84,18 @@ $routes->get('profesores/edit/(:num)', 'Profesores::edit/$1');
 $routes->post('profesores/update/(:num)', 'Profesores::update/$1');
 $routes->post('profesores/delete/(:num)', 'Profesores::delete/$1');
 $routes->get('profesores/search/(:num)', 'Profesores::search/$1');
+$routes->post('profesores/guardar-notas', 'Profesores::guardarNotas');
+$routes->get('profesores/get-estudiantes-materia/(:num)', 'Profesores::getEstudiantesMateria/$1');
+$routes->post('profesores/guardar-asistencia', 'Profesores::guardarAsistencia');
+$routes->get('profesores/get-asistencia-materia/(:num)', 'Profesores::getAsistenciaMateria/$1');
+$routes->get('profesores/get-asistencias-mensuales/(:num)/(:num)/(:num)', 'Profesores::getAsistenciasMensuales/$1/$2/$3');
+$routes->post('profesores/guardar-asistencias-mensuales', 'Profesores::guardarAsistenciasMensuales');
+
+// --- NUEVAS RUTAS PARA VISTA MENSUAL DE ASISTENCIA ---
+$routes->get('profesores/asistencia-mensual/(:num)', 'Profesores::asistenciaMensual/$1');
+$routes->get('profesores/get-eventos-asistencia/(:num)', 'Profesores::getEventosAsistencia/$1');
+$routes->get('profesores/get-estadisticas-mes/(:num)', 'Profesores::getEstadisticasMes/$1');
+$routes->get('profesores/get-resumen-estudiantes/(:num)', 'Profesores::getResumenEstudiantes/$1');
 
 // --- RUTAS PARA ADMINISTRADOR ---
 $routes->get('administrador/estudiantes', 'Estudiantes::index');
@@ -121,3 +136,6 @@ $routes->get('modalidades/edit/(:num)', 'Modalidades::edit/$1');
 $routes->post('modalidades/update/(:num)', 'Modalidades::update/$1');
 $routes->post('modalidades/delete/(:num)', 'Modalidades::delete/$1');
 $routes->get('modalidades/search/(:num)', 'Modalidades::search/$1');
+
+// --- RUTAS PARA CONSULTAS ---
+$routes->post('consultas/enviar', 'Consultas::enviar');

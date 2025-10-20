@@ -48,8 +48,8 @@
                             <select class="form-control" id="carreraSelect">
                                 <option value="">Seleccione una carrera</option>
                                 <?php foreach ($carreras as $carrera): ?>
-                                    <option value="<?= esc($carrera['id_car']) ?>" <?= ($selectedCarrera == $carrera['id_car']) ? 'selected' : '' ?>>
-                                        <?= esc($carrera['ncar']) ?>
+                                    <option value="<?= esc($carrera['id']) ?>" <?= ($selectedCarrera == $carrera['id']) ? 'selected' : '' ?>>
+                                        <?= esc($carrera['nombre_carrera']) ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -150,8 +150,8 @@
                                                     <?php
                                                     $carreraNombre = '';
                                                     foreach ($carreras as $carrera) {
-                                                        if ($carrera['id_car'] == $materia['carrera_id']) {
-                                                            $carreraNombre = $carrera['ncar'];
+                                                        if ($carrera['id'] == $materia['carrera_id']) {
+                                                            $carreraNombre = $carrera['nombre_carrera'];
                                                             break;
                                                         }
                                                     }
@@ -211,7 +211,7 @@
                             <select class="form-control" id="edit_carrera_id" name="carrera_id" required>
                                 <option value="">Seleccione una carrera</option>
                                 <?php foreach ($carreras as $carrera): ?>
-                                    <option value="<?= esc($carrera['id_car']) ?>"><?= esc($carrera['ncar']) ?></option>
+                                    <option value="<?= esc($carrera['id']) ?>"><?= esc($carrera['nombre_carrera']) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>

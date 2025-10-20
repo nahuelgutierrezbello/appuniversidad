@@ -76,8 +76,8 @@
                     <option value="">Seleccione</option>
                     <?php if(isset($categorias) && count($categorias) > 0): ?>
                         <?php foreach($categorias as $cat): ?>
-                            <option value="<?= esc($cat['id_cat']) ?>">
-                                <?= esc($cat['ncat']) ?>
+                            <option value="<?= esc($cat['id']) ?>">
+                                <?= esc($cat['nombre_categoria']) ?>
                             </option>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -89,7 +89,7 @@
                     <option value="">Seleccione</option>
                     <?php if(isset($modalidades) && count($modalidades) > 0): ?>
                         <?php foreach($modalidades as $mod): ?>
-                            <option value="<?= esc($mod['id_mod']) ?>"><?= esc($mod['nmod']) ?></option>
+                            <option value="<?= esc($mod['id']) ?>"><?= esc($mod['nombre_modalidad']) ?></option>
                         <?php endforeach; ?>
                     <?php endif; ?>
                   </select>
@@ -149,13 +149,13 @@
                     <?php if(isset($carreras) && count($carreras) > 0): ?>
                         <?php foreach($carreras as $car): ?>
                             <tr>
-                                <td><?= esc($car['id_car']) ?></td>
-                                <td><?= esc($car['ncar']) ?></td>
+                                <td><?= esc($car['id']) ?></td>
+                                <td><?= esc($car['nombre_carrera']) ?></td>
                                  <td>
-                                    <button class="btn btn-warning btn-sm edit-car-btn" data-id="<?= esc($car['id_car']) ?>" data-bs-toggle="modal" data-bs-target="#editCareerModal">
+                                    <button class="btn btn-warning btn-sm edit-car-btn" data-id="<?= esc($car['id']) ?>" data-bs-toggle="modal" data-bs-target="#editCareerModal">
                                         <i class="fas fa-pencil-alt"></i>
                                     </button>
-                                    <form action="<?= base_url('carreras/delete/' . $car['id_car']) ?>" method="POST" class="d-inline delete-form">
+                                    <form action="<?= base_url('carreras/delete/' . $car['id']) ?>" method="POST" class="d-inline delete-form">
                                         <?= csrf_field() ?>
                                         <button type="submit" class="btn btn-danger btn-sm">
                                             <i class="fas fa-trash-alt"></i>
@@ -207,7 +207,7 @@
                                     <option value="">Seleccione</option>
                                     <?php if(isset($categorias) && count($categorias) > 0): ?>
                                         <?php foreach($categorias as $cat): ?>
-                                            <option value="<?= esc($cat['id_cat']) ?>"><?= esc($cat['ncat']) ?></option>
+                                            <option value="<?= esc($cat['id']) ?>"><?= esc($cat['nombre_categoria']) ?></option>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                 </select>

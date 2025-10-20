@@ -20,6 +20,8 @@ class ProfesorModel extends Model
     protected $allowedFields = ['id', 'legajo', 'nombre_profesor', 'carrera_id'];
     // Desactiva los campos de timestamp automáticos ('created_at', 'updated_at').
     protected $useTimestamps = false;
+    // Define el tipo de retorno como array para compatibilidad con la vista.
+    protected $returnType = 'array';
 
     // Define las reglas de validación que se aplicarán antes de guardar o actualizar.
     protected $validationRules = [
@@ -45,13 +47,17 @@ class ProfesorModel extends Model
     // --- Métodos Personalizados ---
 
     /**
-     * Obtiene todos los profesores.
+     * Obtiene todos los profesores junto con el nombre de su carrera.
+     * Utiliza un 'left join' para asegurar que se muestren todos los profesores,
+     * incluso aquellos que no están asignados a ninguna carrera.
      * @return array
      */
     public function getProfesores()
     {
-        // Construye una consulta SELECT que devuelve todos los profesores.
-        return $this->findAll(); // Ejecuta la consulta y devuelve todos los resultados.
+        // Construye una consulta SELECT que une la tabla 'Profesor' con 'Carrera'.
+        return $this->select('Profesor.*, Carrera.nombre_carrera')
+            ->join('Carrera', 'Carrera.id = Profesor.carrera_id', 'left') // 'left' join para incluir profesores sin carrera.
+            ->findAll(); // Ejecuta la consulta y devuelve todos los resultados.
     }
 
     /**
@@ -97,8 +103,9 @@ class ProfesorModel extends Model
     public function getMateriasDictadas($id_prof)
     {
         return $this->db->table('Profesor_Materia')
-            ->select('Materia.nombre_materia, Materia.codigo_materia, Materia.id as materia_id')
+            ->select('Materia.nombre_materia, Materia.codigo_materia, Materia.id, Materia.carrera_id, Carrera.nombre_carrera')
             ->join('Materia', 'Materia.id = Profesor_Materia.materia_id')
+            ->join('Carrera', 'Carrera.id = Materia.carrera_id')
             ->where('Profesor_Materia.profesor_id', $id_prof)
             ->get()
             ->getResultArray();
@@ -117,7 +124,7 @@ class ProfesorModel extends Model
         $total_estudiantes = 0;
         foreach ($materias as $materia) {
             $estudiantes = $this->db->table('Inscripcion')
-                ->where('materia_id', $materia['materia_id'])
+                ->where('materia_id', $materia['id'])
                 ->countAllResults();
             $total_estudiantes += $estudiantes;
         }
@@ -152,17 +159,84 @@ class ProfesorModel extends Model
 
         foreach ($materias as $materia) {
             $estudiantes = $this->db->table('Inscripcion')
-                ->select('Estudiante.nombre_estudiante, Estudiante.dni, Inscripcion.fecha_inscripcion, Inscripcion.estado_inscripcion')
+                ->select('Estudiante.id, Estudiante.nombre_estudiante, Estudiante.dni, Estudiante.email, Inscripcion.fecha_inscripcion, Inscripcion.estado_inscripcion')
                 ->join('Estudiante', 'Estudiante.id = Inscripcion.estudiante_id')
-                ->where('Inscripcion.materia_id', $materia['materia_id'])
+                ->where('Inscripcion.materia_id', $materia['id'])
                 ->get()
                 ->getResultArray();
-            $estudiantes_por_materia[$materia['materia_id']] = [
-                'materia' => $materia,
-                'estudiantes' => $estudiantes
-            ];
+            $estudiantes_por_materia[$materia['id']] = $estudiantes;
         }
 
         return $estudiantes_por_materia;
+    }
+
+    /**
+     * Obtiene las carreras asignadas a un profesor basado en las materias que dicta.
+     * @param int $id_prof El ID del profesor.
+     * @return array Devuelve un array de carreras únicas con información completa.
+     */
+    public function getCarrerasDelProfesor($id_prof)
+    {
+        return $this->db->table('Profesor_Materia')
+            ->select('Carrera.id, Carrera.nombre_carrera, Carrera.codigo_carrera, Categoria.nombre_categoria, Modalidad.nombre_modalidad')
+            ->join('Materia', 'Materia.id = Profesor_Materia.materia_id')
+            ->join('Carrera', 'Carrera.id = Materia.carrera_id')
+            ->join('Categoria', 'Categoria.carrera_id = Carrera.id', 'left')
+            ->join('Modalidad', 'Modalidad.carrera_id = Carrera.id', 'left')
+            ->where('Profesor_Materia.profesor_id', $id_prof)
+            ->groupBy('Carrera.id')
+            ->get()
+            ->getResultArray();
+    }
+
+    /**
+     * Obtiene los estudiantes inscritos en las materias de una carrera específica dictadas por un profesor.
+     * @param int $carrera_id El ID de la carrera.
+     * @param int $id_prof El ID del profesor.
+     * @return array Devuelve un array de estudiantes.
+     */
+    public function getEstudiantesPorCarrera($carrera_id, $id_prof)
+    {
+        return $this->db->table('Inscripcion')
+            ->select('Estudiante.id, Estudiante.nombre_estudiante, Estudiante.dni, Inscripcion.fecha_inscripcion, Inscripcion.estado_inscripcion')
+            ->join('Estudiante', 'Estudiante.id = Inscripcion.estudiante_id')
+            ->join('Materia', 'Materia.id = Inscripcion.materia_id')
+            ->join('Profesor_Materia', 'Profesor_Materia.materia_id = Materia.id')
+            ->where('Materia.carrera_id', $carrera_id)
+            ->where('Profesor_Materia.profesor_id', $id_prof)
+            ->groupBy('Estudiante.id')
+            ->get()
+            ->getResultArray();
+    }
+
+    /**
+     * Obtiene los estudiantes inscritos en una materia específica.
+     * @param int $materia_id El ID de la materia.
+     * @return array Devuelve un array de estudiantes.
+     */
+    public function getEstudiantesPorMateriaEspecifica($materia_id)
+    {
+        return $this->db->table('Inscripcion')
+            ->select('Estudiante.id, Estudiante.nombre_estudiante, Estudiante.dni')
+            ->join('Estudiante', 'Estudiante.id = Inscripcion.estudiante_id')
+            ->where('Inscripcion.materia_id', $materia_id)
+            ->get()
+            ->getResultArray();
+    }
+
+    /**
+     * Obtiene el detalle de asistencia por materia para un profesor.
+     * @param int $materia_id El ID de la materia.
+     * @return array Devuelve un array de asistencias.
+     */
+    public function getDetalleAsistenciaPorMateria($materia_id)
+    {
+        return $this->db->table('Asistencia')
+            ->select('Asistencia.fecha, Asistencia.estado, Estudiante.nombre_estudiante')
+            ->join('Estudiante', 'Estudiante.id = Asistencia.estudiante_id')
+            ->where('Asistencia.materia_id', $materia_id)
+            ->orderBy('Asistencia.fecha', 'DESC')
+            ->get()
+            ->getResultArray();
     }
 }

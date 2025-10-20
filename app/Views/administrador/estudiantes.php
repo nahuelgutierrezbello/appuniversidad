@@ -29,9 +29,16 @@
                         <?php if (session()->has('errors')): ?>
                             <div class="alert alert-danger">
                                 <ul class="mb-0">
-                                <?php foreach (session('errors') as $error): ?>
-                                    <li><?= esc($error) ?></li>
-                                <?php endforeach ?>
+                                <?php
+                                $errors = session('errors');
+                                if (is_array($errors)) {
+                                    foreach ($errors as $error): ?>
+                                        <li><?= esc($error) ?></li>
+                                    <?php endforeach;
+                                } else {
+                                    echo '<li>' . esc($errors) . '</li>';
+                                }
+                                ?>
                                 </ul>
                             </div>
                         <?php endif ?>
@@ -64,8 +71,8 @@
                                     <option value="">Seleccione una carrera</option>
                                     <?php if(isset($carreras) && count($carreras) > 0): ?>
                                         <?php foreach($carreras as $car): ?>
-                                            <option value="<?= esc($car['id_car']) ?>">
-                                                <?= esc($car['ncar']) ?>
+                                            <option value="<?= esc($car['id']) ?>">
+                                                <?= esc($car['nombre_carrera']) ?>
                                             </option>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
@@ -127,8 +134,8 @@
                                             <option value="" selected disabled>Seleccione una carrera</option>
                                             <?php if(isset($carreras) && count($carreras) > 0): ?>
                                                 <?php foreach($carreras as $car): ?>
-                                                    <option value="<?= esc($car['id_car']) ?>">
-                                                        <?= esc($car['ncar']) ?>
+                                                    <option value="<?= esc($car['id']) ?>">
+                                                        <?= esc($car['nombre_carrera']) ?>
                                                     </option>
                                                 <?php endforeach; ?>
                                             <?php endif; ?>
@@ -182,17 +189,17 @@
                                     <?php if(isset($estudiantes) && count($estudiantes) > 0): ?>
                                         <?php foreach($estudiantes as $est): ?>
                                             <tr>
-                                                <td><?= esc($est['id_est']) ?></td>
-                                                <td><?= esc($est['nest']) ?></td>
+                                                <td><?= esc($est['id']) ?></td>
+                                                <td><?= esc($est['nombre_estudiante']) ?></td>
                                                 <td><?= esc($est['dni']) ?></td>
                                                 <td><?= esc($est['edad']) ?></td>
                                                 <td><?= esc($est['email']) ?></td>
-                                                <td><?= esc($est['ncar']) ?></td>
+                                                <td><?= esc($est['nombre_carrera']) ?></td>
                                                 <td>
-                                                    <button class="btn btn-info btn-sm edit-btn" data-id="<?= esc($est['id_est']) ?>" data-bs-toggle="modal" data-bs-target="#editStudentModal">
+                                                    <button class="btn btn-info btn-sm edit-btn" data-id="<?= esc($est['id']) ?>" data-bs-toggle="modal" data-bs-target="#editStudentModal">
                                                         <i class="fas fa-pencil-alt"></i>
                                                     </button>
-                                                    <form action="<?= base_url('estudiantes/delete/' . $est['id_est']) ?>" method="post" class="d-inline delete-form">
+                                                    <form action="<?= base_url('estudiantes/delete/' . $est['id']) ?>" method="post" class="d-inline delete-form">
                                                         <?= csrf_field() ?>
                                                         <button type="submit" class="btn btn-danger btn-sm" title="Eliminar">
                                                             <i class="fas fa-trash-alt"></i>
@@ -224,7 +231,7 @@
                 <form id="editStudentForm" method="post">
                     <?= csrf_field() ?>
                     <div class="modal-body">
-                        <input type="hidden" name="id_est" id="edit_id_est">
+                        <input type="hidden" name="id" id="edit_id">
                         <div class="mb-3">
                             <label for="edit_nest" class="form-label">Nombre Completo</label>
                             <input type="text" class="form-control" id="edit_nest" name="nest" required>
@@ -251,8 +258,8 @@
                                 <option value="">Seleccione una carrera</option>
                                 <?php if(isset($carreras) && count($carreras) > 0): ?>
                                     <?php foreach($carreras as $car): ?>
-                                        <option value="<?= esc($car['id_car']) ?>">
-                                            <?= esc($car['ncar']) ?>
+                                        <option value="<?= esc($car['id']) ?>">
+                                            <?= esc($car['nombre_carrera']) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 <?php endif; ?>

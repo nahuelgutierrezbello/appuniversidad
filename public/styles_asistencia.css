@@ -1,0 +1,306 @@
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2980b9;
+    --success-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --light-color: #f8f9fa;
+    --border-color: #dee2e6;
+    --weekend-color: #f8d7da;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f5f7fa;
+    color: #333;
+    line-height: 1.4;
+    padding: 15px;
+    font-size: 14px;
+}
+
+.container {
+    max-width: 1300px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+h1 {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+    font-size: 1.5rem;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    background-color: #f8f9fa;
+    padding: 12px;
+    border-radius: 6px;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.control-label {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #555;
+}
+
+select, button {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: white;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    align-self: flex-end;
+}
+
+button:hover {
+    background-color: var(--secondary-color);
+}
+
+.table-container {
+    overflow-x: auto;
+    margin-top: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    max-height: 65vh;
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+    font-size: 13px;
+}
+
+th, td {
+    padding: 8px 10px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+th {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+}
+
+th.person-header {
+    background-color: var(--secondary-color);
+    position: sticky;
+    left: 0;
+    z-index: 10;
+    min-width: 120px;
+}
+
+td.person-name {
+    background-color: #e9f7fe;
+    font-weight: 600;
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    min-width: 120px;
+}
+
+tr:nth-child(even) td.person-name {
+    background-color: #d4edf9;
+}
+
+tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.day-header {
+    font-size: 0.75em;
+    padding: 6px 4px;
+    min-width: 28px;
+}
+
+.weekend {
+    background-color: var(--weekend-color);
+}
+
+.attendance-cell {
+    padding: 2px;
+    position: relative;
+    min-width: 28px;
+}
+
+.checkbox-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.attendance-checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.person-row:hover {
+    background-color: #e9f7fe;
+}
+
+.percentage-cell {
+    background-color: #f0f8ff;
+    font-weight: bold;
+    color: var(--primary-color);
+    min-width: 60px;
+}
+
+.status-summary {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+}
+
+.status-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.present {
+    background-color: var(--success-color);
+}
+
+.absent {
+    background-color: var(--danger-color);
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.save-btn {
+    background-color: var(--success-color);
+}
+
+.reset-btn {
+    background-color: var(--danger-color);
+}
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    padding: 12px;
+    background-color: #e9f7fe;
+    border-radius: 4px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.day-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.day-number {
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.day-name {
+    font-size: 0.7em;
+    opacity: 0.8;
+}
+
+.month-year-display {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 8px 0;
+    color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+    .controls {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .control-group {
+        width: 100%;
+        max-width: 250px;
+    }
+
+    select, button {
+        width: 100%;
+    }
+}

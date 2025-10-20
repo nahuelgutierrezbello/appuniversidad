@@ -19,20 +19,14 @@ class CarreraSeeder extends Seeder
         $builder = $this->db->table('Carrera');
 
         // Define un array con los datos de las carreras de ejemplo.
-        // Los campos 'id_cat' y 'id_mod' son claves foráneas que se corresponden
-        // con los IDs de las categorías y modalidades insertadas en sus respectivos seeders.
         $carreras = [
             [
-                'ncar' => 'Desarrollo de Software',
-                'codcar' => 'DS-1',
-                'id_cat' => 1, // Corresponde al ID de 'TECNICATURAS SUPERIORES'
-                'id_mod' => 1, // Corresponde al ID de 'PRESENCIAL'
+                'nombre_carrera' => 'Desarrollo de Software',
+                'codigo_carrera' => 'DS-1',
             ],
             [
-                'ncar' => 'Profesorado de Inglés',
-                'codcar' => 'PI-1',
-                'id_cat' => 2, // Corresponde al ID de 'PROFESORADOS'
-                'id_mod' => 3, // Corresponde al ID de 'HÍBRIDA'
+                'nombre_carrera' => 'Profesorado de Inglés',
+                'codigo_carrera' => 'PI-1',
             ],
         ];
 

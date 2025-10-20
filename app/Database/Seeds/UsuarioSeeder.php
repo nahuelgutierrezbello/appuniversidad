@@ -20,13 +20,11 @@ class UsuarioSeeder extends Seeder
         // Vacía la tabla 'usuarios' para evitar duplicados.
         $builder->truncate();
 
-        // Define un array con los códigos de los tipos de usuario.
-        // Esta tabla parece ser un ejemplo o un placeholder para una futura
-        // implementación de un sistema de usuarios más complejo.
+        // Define un array con los usuarios de ejemplo.
         $usuarios = [
-            ['rol' => 'A'], // admin
-            ['rol' => 'P'], // profesor
-            ['rol' => 'L'], // alumno
+            ['usuario' => 'admin', 'password' => password_hash('admin123', PASSWORD_DEFAULT), 'rol_id' => 1],
+            ['usuario' => 'profesor1', 'password' => password_hash('prof123', PASSWORD_DEFAULT), 'rol_id' => 2],
+            ['usuario' => 'alumno1', 'password' => password_hash('alum123', PASSWORD_DEFAULT), 'rol_id' => 3],
         ];
 
         // Inserta el lote de usuarios en la base de datos.
