@@ -121,3 +121,9 @@ $routes->get('modalidades/edit/(:num)', 'Modalidades::edit/$1');
 $routes->post('modalidades/update/(:num)', 'Modalidades::update/$1');
 $routes->post('modalidades/delete/(:num)', 'Modalidades::delete/$1');
 $routes->get('modalidades/search/(:num)', 'Modalidades::search/$1');
+
+// --- RUTAS PARA LOGIN ---
+$routes->get('login', 'LoginController::index');
+$routes->post('login/autenticar', 'LoginController::autenticar');
+$routes->get('logout', 'LoginController::logout');
+$routes->get('perfil', 'UsuarioController::perfil');
